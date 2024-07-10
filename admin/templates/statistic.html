@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html data-wf-domain="telegram.grayscheme.com" data-wf-page="646911c92baad06f4f42a795"
+data-wf-site="646911c92baad06f4f42a792">
+<head>
+    <meta charset="utf-8">
+    <title>Статистика</title>
+    <meta name="description" content="Статистика">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="Webflow" name="generator">
+    <link href="/static/style/style.css" rel="stylesheet" type="text/css">
+    <link href="/static/img/logo.png" rel="shortcut icon" type="image/x-icon">
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        input[name="daterange"] {
+            width: 10%;
+            margin-left: 50px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        select#mySelect {
+            margin-left: 20px;
+            width: 200px; /* Ширина селекта */
+            padding: 10px; /* Внутренний отступ */
+            font-size: 16px; /* Размер шрифта */
+            border: 1px solid #ccc; /* Граница */
+            border-radius: 5px; /* Скругление углов */
+            box-sizing: border-box; /* Учитывать границу и отступы при задании ширины */
+            appearance: none; /* Удалить стандартные стрелки */
+            background-color: #fff; /* Цвет фона */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%2371798B" d="M14.28 8.47a1 1 0 0 0-1.41 0L10 11.64 6.13 8.47a1 1 0 1 0-1.41 1.41l4.95 4.95a1 1 0 0 0 1.41 0l4.95-4.95a1 1 0 0 0 0-1.41z"/></svg>'); /* Изображение для кастомной стрелки */
+            background-repeat: no-repeat; /* Запретить повторение фона */
+            background-position: right 10px center; /* Позиция кастомной стрелки */
+            cursor: pointer; /* Изменение курсора при наведении */
+        }
+
+        /* Стили для наведения */
+        select#mySelect:hover {
+            border-color: #aaa; /* Изменение цвета границы при наведении */
+        }
+
+        /* Стили для активного состояния */
+        select#mySelect:focus {
+            outline: none; /* Удаление стандартного обвода */
+            border-color: #555; /* Изменение цвета границы при активации */
+        }
+    </style>
+</head>
+<body class="body">
+
+    <section class="block-022">
+        <section class="numbers-input">
+            <div class="container-stat">
+            <div class="row">
+                    <div class="field-stat">
+                        <div class="top">Юзеров с этой меткой</div>
+                        <div class="bottom" data-field="mark_users">{{mark_users}}</div>
+                    </div>
+                    <div class="field-stat">
+                        <div class="top">Сделано покупок</div>
+                        <div class="bottom" data-field="purchases">{{ purchases }}</div>
+                    </div>
+                    <div class="field-stat">
+                        <div class="top">Заработано</div>
+                        <div class="bottom" data-field="earned">{{ earned }}</div>
+                    </div>
+                    <div class="field-stat">
+                        <div class="top">Успешно получили рассылку</div>
+                        <div class="bottom" data-field="suc_spam">{{ suc_spam }}</div>
+                    </div>
+                </div>
+                
+                <input type="text" name="daterange"/>
+                <select id="mySelect" name="mySelect">
+                    <option selected value="all">Все метки</option>
+                    {% for mark in marks %}
+                    <option value={{mark.id}}>{{mark.name}}</option>
+                    {% endfor %}
+                </select>
+            </div> 
+
+     
+        </section>
+    </section>
+    <script>
+        $(function() {
+          $('input[name="daterange"]').daterangepicker({
+            opens: 'left'
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+          });
+        });
+
+
+    $(function() {
+        $('#mySelect').on('change', function() {
+            var selectedValue = $(this).val();
+
+            fetch('/statistic/statistic_api?mark=' + selectedValue)
+                .then(response => response.json())
+                .then(data => {
+
+                    document.querySelector('.bottom[data-field="mark_users"]').innerText = data.mark_users;
+                    document.querySelector('.bottom[data-field="purchases"]').innerText = data.purchases;
+                    document.querySelector('.bottom[data-field="earned"]').innerText = data.earned;
+                    document.querySelector('.bottom[data-field="suc_spam"]').innerText = data.suc_spam;
+
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        });
+    });
+
+    $(function() {
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        }
+
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'left',
+            startDate: start,
+            endDate: end,
+        }, function(start, end, label) {
+
+            var start_date = start.format('YYYY-MM-DD');
+            var end_date = end.format('YYYY-MM-DD');
+            var mark = $('#mySelect').val();
+
+            fetch('/statistic/statistic_api?mark=' + mark + '&start_date=' + start_date + '&end_date=' + end_date)
+                .then(response => response.json())
+                .then(data => {  
+
+                    document.querySelector('.bottom[data-field="mark_users"]').innerText = data.mark_users;
+                        document.querySelector('.bottom[data-field="purchases"]').innerText = data.purchases;
+                        document.querySelector('.bottom[data-field="earned"]').innerText = data.earned;
+                        document.querySelector('.bottom[data-field="suc_spam"]').innerText = data.suc_spam;
+
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            });
+        });
+
+        </script>
+</body>
+</html>
