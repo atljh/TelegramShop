@@ -168,7 +168,7 @@ async def evaluate(amount: float, from_index: int, conn: Connection = None):
 
     data_to_update = [(x.get('user_id'), x.get('balance')) for x in users_to_update]
     q = '''UPDATE bot_user
-           SET pyramid_balance = pyramid_balance + $2
+           SET balance = balance + $2
            WHERE id = $1'''
     await conn.executemany(q, data_to_update)
 
@@ -411,7 +411,7 @@ async def update_reserve_and_balance(conn: Connection):
     users_to_update = [x for x in users_to_update if x.get('is_done')]
     data_to_update = [(x.get('telegram_id'), x.get('balance')) for x in users_to_update]
     q = '''UPDATE bot_user
-           SET pyramid_balance = pyramid_balance + $2
+           SET balance = balance + $2
            WHERE telegram_id = $1'''
     await conn.executemany(q, data_to_update)
 
@@ -622,7 +622,7 @@ async def takemoney(telegram_id: int, amount: float, bet_id: int, conn: Connecti
     to_res = amount * 0.05
     amount = amount - to_res
 
-    q = '''UPDATE bot_user SET pyramid_balance = pyramid_balance + $2 WHERE telegram_id = $1'''
+    q = '''UPDATE bot_user SET balance = balance + $2 WHERE telegram_id = $1'''
     await conn.execute(q, telegram_id, amount)
 
     q = '''UPDATE bot_pyramid_info

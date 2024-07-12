@@ -1,9 +1,9 @@
-ssudo apt update
+sudo apt update
 sudo apt install python3 python3-pip redis git screen postgresql nginx certbot python3-certbot-nginx
 pip3 install aiogram psycopg2-binary asyncpg aioredis django
 
 sudo nano /etc/nginx/sites-available/example.com
-    server { 
+	    server { 
             root /var/www/default/html;
             index index.html index.htm index.nginx-debian.html;
 

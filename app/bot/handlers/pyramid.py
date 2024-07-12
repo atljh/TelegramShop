@@ -102,7 +102,7 @@ async def pyramid_info_handler(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'invest':
         text = await var.get_text("input_invest_amount")
         balance = await user.balance(callback.from_user.id)
-        text = text.format(balance=balance.get('pyramid_balance'))
+        text = text.format(balance=balance.get('balance'))
 
         image = await var.get_var("input_invest_amount_image", str)
         reply_markup = InlineKeyboard(
@@ -334,7 +334,7 @@ async def input_invest_amount(message: Message, state: FSMContext):
             await message.delete()
             return
 
-        if amount > (await user.balance(message.from_user.id)).get('pyramid_balance'):
+        if amount > (await user.balance(message.from_user.id)).get('balance'):
             await message.delete()
             return
         if await user.pay_in_shop(message.from_user.id, amount, pyramid=True):

@@ -376,17 +376,10 @@ async def create_deposit(user_id: int, amount: int, gateway: str, conn: Connecti
 
 @connection
 async def pay_in_shop(user_id: int, amount: int, pyramid: bool = False, in_shop=False, conn: Connection = None) -> bool:
-    if not pyramid:
-        q = '''UPDATE bot_user
-               SET balance = balance - $2
-               WHERE telegram_id = $1 AND balance - $2 >= 0
-               RETURNING 1'''
-    else:
-        q = '''UPDATE bot_user
-                SET pyramid_balance = pyramid_balance - $2
-                WHERE telegram_id = $1 and pyramid_balance -$2 >=0
-                RETURNING 1
-                '''
+    q = '''UPDATE bot_user
+            SET balance = balance - $2
+            WHERE telegram_id = $1 AND balance - $2 >= 0
+            RETURNING 1'''
     res = bool(await conn.fetchval(q, user_id, amount))
     if in_shop and res:
         q = '''SELECT usr.id AS id, usr.is_special_referral AS is_special_referral

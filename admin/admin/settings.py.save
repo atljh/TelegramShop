@@ -24,15 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 #SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = f'{os.environ.get("SECRET_KEY")}'
+SECRET_KEY = '#hxyk46pu2%-(tq(%8%r1*&(3r3%no@q#@i#ybzsrf1$bha7yr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False')
+#DEBUG = os.getenv("DEBUG"
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', f'https://*.{os.environ.get("DOMAIN")}']
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', f'https://*.{os.getenv("domain")}']
+
+
+
 
 # Application definition
+
 INSTALLED_APPS = [
     'admin_panel',
     'django.contrib.admin',
@@ -81,11 +85,11 @@ WSGI_APPLICATION = 'admin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-        'PORT': os.environ.get('POSTGERS_PORT', '5432'),
+        'NAME': os.getenv('postgres_name'),
+        'USER': os.getenv('postgres_user'),
+        'PASSWORD': os.getenv('postgres_password'),
+        'HOST': os.getenv('postgres_host', 'localhost'),
+        'PORT': os.getenv('postgres_port', '5432'),
         'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 }
@@ -139,8 +143,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = f"{os.environ.get('REDIS_URI')}"
-CELERY_RESULT_BACKEND = f"{os.environ.get('REDIS_URI')}"
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 # (Optional) Set the timezone for Celery tasks.
 CELERY_TIMEZONE = 'UTC'
