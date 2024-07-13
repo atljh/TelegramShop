@@ -19,9 +19,9 @@ async def bot_start(referral_telegram_id: str, telegram_id: int, first_name: str
     
     q = '''INSERT INTO bot_user(telegram_id, first_name, last_name, telegram_link, 
                         joined_at, status, balance, coin_balance, pyramid_balance, referral_id, second_referral_id,
-                        balance_from_referral, balance_from_referral_today, is_special_referral, from_channel_link, is_started)
+                        balance_from_referral, balance_from_referral_today,balance_from_sec_referral,balance_from_sec_referral_today, is_special_referral, from_channel_link, is_started)
                VALUES($1, $2, $3, $4, NOW(), 'frod', 0, 0, 0,
-                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, False, $6, $7)
+                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, 0, 0, False, $6, $7)
             ON CONFLICT(telegram_id) DO UPDATE SET
             is_started = EXCLUDED.is_started'''
     await conn.execute(q, telegram_id, first_name, last_name, telegram_link, referral_telegram_id, from_channel_link, is_started)
@@ -389,7 +389,15 @@ async def pay_in_shop(user_id: int, amount: int, pyramid: bool = False, in_shop=
         resp = await conn.fetchrow(q, user_id)
         if not resp:
             return res
+
+        q = '''SELECT usr.id AS id, usr.is_special_referral AS is_special_referral
+               FROM bot_user AS usr
+               INNER JOIN bot_user AS ref ON ref.second_referral_id = usr.id
+               WHERE ref.telegram_id = $1'''
+        sec_resp = await conn.fetchrow(q, user_id)
+
         ref_id = resp.get('id')
+        sec_ref_id = resp.get('id')
         is_special_referral = resp.get('is_special_referral')
         percent = 0
         if is_special_referral:
@@ -409,6 +417,13 @@ async def pay_in_shop(user_id: int, amount: int, pyramid: bool = False, in_shop=
                     balance_from_referral_today = balance_from_referral_today + $1
                 WHERE id = $2'''
             await conn.execute(q, amount * percent / 100, ref_id)
+        if sec_ref_id:
+            q = '''UPDATE bot_user
+                SET balance = balance + $1,
+                    balance_from_sec_referral = balance_from_sec_referral + $1,
+                    balance_from_sec_referral_today = balance_from_sec_referral_today + $1
+                WHERE id = $2'''
+            await conn.execute(q, amount * percent / 100, sec_ref_id)
     return res
 
 
@@ -440,11 +455,14 @@ async def pay_in_shop_from_balance(user_id: int, amount: int, conn: Connection =
                SET balance = balance - $2
                WHERE telegram_id = $1'''
         await conn.execute(q, user_id, amount)
-        q = '''SELECT usr.id AS id, usr.is_special_referral AS is_special_referral
+        q = '''SELECT usr.id AS id,
+                    usr.is_special_referral AS is_special_referral
                FROM bot_user AS usr
                INNER JOIN bot_user AS ref ON ref.referral_id = usr.id
+               INNER JOIN bot_user AS sec_ref ON sec_ref.second_referral_id = usr.id
                WHERE ref.telegram_id = $1'''
         resp = await conn.fetchrow(q, user_id)
+
         if not resp:
             return True
         ref_id = resp.get('id')
@@ -480,26 +498,30 @@ async def pay_by_coins(user_id: int, amount: int, conn: Connection = None):
 
 @connection
 async def get_referral_info(user_id: int, conn: Connection = None):
-    q = '''SELECT balance_from_referral, balance_from_referral_today
+    q = '''SELECT balance_from_referral, balance_from_referral_today, balance_from_sec_referral, balance_from_sec_referral_today
            FROM bot_user
            WHERE telegram_id = $1'''
     balances = await conn.fetchrow(q, user_id)
     if balances:
         balances = dict(balances)
     else:
-        balances = {"balance_from_referral": 0, "balance_from_referral_today": 0}
-
+        balances = {
+            "balance_from_referral": 0,
+            "balance_from_referral_today": 0,
+            "balance_from_sec_referral": 0,
+            "balance_from_sec_referral_today": 0
+        }
     q = '''SELECT COUNT(rf.id)
            FROM bot_user AS usr
            INNER JOIN bot_user AS rf ON rf.referral_id = usr.id
            WHERE usr.telegram_id = $1 AND rf.is_started'''
-    all_referral_count = await conn.fetchval(q, user_id) or 0
+    first_referral_count = await conn.fetchval(q, user_id) or 0
 
     q = '''SELECT COUNT(rf.id)
            FROM bot_user AS usr
            INNER JOIN bot_user AS rf ON rf.second_referral_id = usr.id
            WHERE usr.telegram_id = $1 AND rf.is_started'''
-    all_sec_referral_count = await conn.fetchval(q, user_id) or 0
+    sec_referral_count = await conn.fetchval(q, user_id) or 0
     
     q = '''SELECT COUNT(rf.id)
            FROM bot_user AS usr
@@ -515,15 +537,26 @@ async def get_referral_info(user_id: int, conn: Connection = None):
 
     q = '''SELECT COUNT(rf.id)
            FROM bot_user AS usr
+           INNER JOIN bot_user AS rf ON rf.second_referral_id = usr.id
+           WHERE usr.telegram_id = $1 AND rf.joined_at::date = CURRENT_DATE AND rf.is_started'''
+    today_sec_referral_count = await conn.fetchval(q, user_id) or 0
+
+
+    q = '''SELECT COUNT(rf.id)
+           FROM bot_user AS usr
            INNER JOIN bot_user AS rf ON rf.referral_id = usr.id
            WHERE usr.telegram_id = $1 AND rf.joined_at::date = CURRENT_DATE AND rf.from_channel_link'''
     today_special_referral_count = await conn.fetchval(q, user_id) or 0
+
+    
     info = {
         **balances,
-        "all_referral_count": all_referral_count,
-        "all_sec_referral_count": all_sec_referral_count,
+        "all_referral_count": first_referral_count+sec_referral_count,
+        "today_referral_count": today_referral_count+today_sec_referral_count,
 
-        "today_referral_count": today_referral_count,
+        "first_referral_count": first_referral_count,
+        "sec_referral_count": sec_referral_count,
+
         "special_referral_count": special_referral_count,
         "today_special_referral_count": today_special_referral_count
     }
@@ -533,7 +566,8 @@ async def get_referral_info(user_id: int, conn: Connection = None):
 @connection
 async def set_zero_referral_balance_today(conn: Connection):
     q = '''UPDATE bot_user
-           SET balance_from_referral_today = 0'''
+           SET balance_from_referral_today = 0,
+           SET balance_from_sec_referral_today = 0'''
     await conn.execute(q)
 
 

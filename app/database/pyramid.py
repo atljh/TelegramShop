@@ -120,6 +120,7 @@ async def evaluate(amount: float, from_index: int, conn: Connection = None):
            ORDER BY index'''
 
     deposit_message = await var.get_text('deposit_message')
+    deposit_direct_message = await var.get_text('deposit_direct_message')
     chat_id = await var.get_var('chat_id', int)
 
     prc = [0.01, 0.01, 0.01, 0.01, 0.01]
@@ -139,6 +140,7 @@ async def evaluate(amount: float, from_index: int, conn: Connection = None):
             user['amount'] = summ
             new_queue.append(user)
 
+            await bot.send_message(chat_id=user['telegram_id'], text=deposit_direct_message.format(amount=summ))   
             await bot.send_message(chat_id=chat_id, text=deposit_message.format(username=user.get('username'),user_name=user.get('user_name'), amount=summ), disable_web_page_preview=True)   
 
 
@@ -150,6 +152,7 @@ async def evaluate(amount: float, from_index: int, conn: Connection = None):
             unused += summ - to_add
             new_queue.append(user)
 
+            await bot.send_message(chat_id=user['telegram_id'], text=deposit_direct_message.format(amount=to_add))   
             await bot.send_message(chat_id=chat_id, text=deposit_message.format(username=user.get('username'),user_name=user.get('user_name'), amount=to_add), disable_web_page_preview=True)   
 
 
@@ -352,6 +355,7 @@ async def get_pyramid_queue(conn: Connection) -> List[dict]:
 @connection
 async def update_reserve_and_balance(conn: Connection):
     reserve = (await get_reserve()).get('reserve')
+    print('ff')
     if not reserve:
         return
     
@@ -455,8 +459,8 @@ async def from_deposit_to_ref(amount: float, first_ref, second_ref, conn: Connec
         if sec_ref_id:
             q = ''' UPDATE bot_user
                     SET balance = balance + $1,
-                        balance_from_referral = balance_from_referral + $1,
-                        balance_from_referral_today = balance_from_referral_today + $1
+                        balance_from_sec_referral = balance_from_sec_referral + $1,
+                        balance_from_sec_referral_today = balance_from_sec_referral_today + $1
                     WHERE id = $2'''
             await conn.execute(q, amount * 0.01, sec_ref_id)
 

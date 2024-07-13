@@ -56,17 +56,17 @@ async def start(message: Message, state: FSMContext):
         return
     else:
         st = await state.get_state()
-        # if st is None:
-        referral_telegram_id = message.get_args()
-        telegram_id = message.from_user.id
-        first_name = message.from_user.first_name
-        last_name = message.from_user.last_name
-        telegram_link = message.from_user.username
-        
-        await user.bot_start(referral_telegram_id, telegram_id, first_name, last_name, telegram_link)
-        await message.answer(**await start_menu(message.from_user.id))
-        await state.set_state('started')
-        return
+        if st is None:
+            referral_telegram_id = message.get_args()
+            telegram_id = message.from_user.id
+            first_name = message.from_user.first_name
+            last_name = message.from_user.last_name
+            telegram_link = message.from_user.username
+            
+            await user.bot_start(referral_telegram_id, telegram_id, first_name, last_name, telegram_link)
+            await message.answer(**await start_menu(message.from_user.id))
+            await state.set_state('started')
+            return
 
         data = await message.answer(**await start_menu(message.from_user.id))
         await user.update_user(data['chat'])

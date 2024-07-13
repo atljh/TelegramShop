@@ -41,8 +41,8 @@ class User(models.Model):
     balance_from_referral = models.FloatField(verbose_name="Заработано с реферала", default=0)
     balance_from_referral_today = models.FloatField(verbose_name="Заработано с реферала сегодня", default=0)
 
-    balance_from_sec_referral = models.FloatField(verbose_name="Заработано с рефа первого ур", default=0)
-    balance_from_sec_referral_today = models.FloatField(verbose_name="Заработано с рефа первого ур сегодня",default=0)
+    balance_from_sec_referral = models.FloatField(verbose_name="Заработано с рефа второго ур", default=0)
+    balance_from_sec_referral_today = models.FloatField(verbose_name="Заработано с рефа второго ур сегодня",default=0)
 
     
     is_special_referral = models.BooleanField(default=False)
