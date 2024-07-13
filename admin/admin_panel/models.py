@@ -28,7 +28,7 @@ class User(models.Model):
     mark = models.ForeignKey(to=Mark, on_delete=models.SET_NULL, **_null_blank) 
 
     referral = models.ForeignKey(to='self', on_delete=models.SET_NULL, **_null_blank, related_name='referrals')
-    second_referral = models.ForeignKey(verbose_name="Реф первого уровня", to='self', on_delete=models.SET_NULL, **_null_blank, related_name='second_referrals')
+    second_referral = models.ForeignKey(verbose_name="Реф второго уровня", to='self', on_delete=models.SET_NULL, **_null_blank, related_name='second_referrals')
 
     joined_at = models.DateTimeField(**_null_blank)
 
@@ -38,18 +38,21 @@ class User(models.Model):
     coin_balance = models.FloatField(default=0)
     pyramid_balance = models.FloatField(default=0, null=True)
 
-    balance_from_referral = models.FloatField(default=0)
-    balance_from_referral_today = models.FloatField(default=0)
+    balance_from_referral = models.FloatField(verbose_name="Заработано с реферала", default=0)
+    balance_from_referral_today = models.FloatField(verbose_name="Заработано с реферала сегодня", default=0)
 
-    topping_uses_count = models.SmallIntegerField(default=0)
+    balance_from_sec_referral = models.FloatField(verbose_name="Заработано с рефа первого ур", default=0)
+    balance_from_sec_referral_today = models.FloatField(verbose_name="Заработано с рефа первого ур сегодня",default=0)
+
     
     is_special_referral = models.BooleanField(default=False)
     from_channel_link = models.BooleanField(default=False)
     is_started = models.BooleanField(default=True)
 
-    auto_topping_minutes = models.IntegerField(default=0)
-    auto_topping_last = models.DateTimeField(**_null_blank)
-    auto_topping_status = models.BooleanField(default=False)
+    # topping_uses_count = models.SmallIntegerField(default=0)
+    # auto_topping_minutes = models.IntegerField(default=0)
+    # auto_topping_last = models.DateTimeField(**_null_blank)
+    # auto_topping_status = models.BooleanField(default=False)
 
 
     def __str__(self):

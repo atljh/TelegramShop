@@ -18,10 +18,10 @@ async def bot_start(referral_telegram_id: str, telegram_id: int, first_name: str
         referral_telegram_id = None
     
     q = '''INSERT INTO bot_user(telegram_id, first_name, last_name, telegram_link, 
-                        joined_at, status, balance, coin_balance, pyramid_balance, topping_uses_count, referral_id, second_referral_id,
-                        balance_from_referral, balance_from_referral_today, is_special_referral, from_channel_link, is_started, auto_topping_minutes, auto_topping_status)
-               VALUES($1, $2, $3, $4, NOW(), 'frod', 0, 0, 0, 0,
-                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, False, $6, $7, 0, False)
+                        joined_at, status, balance, coin_balance, pyramid_balance, referral_id, second_referral_id,
+                        balance_from_referral, balance_from_referral_today, is_special_referral, from_channel_link, is_started)
+               VALUES($1, $2, $3, $4, NOW(), 'frod', 0, 0, 0,
+                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, False, $6, $7)
             ON CONFLICT(telegram_id) DO UPDATE SET
             is_started = EXCLUDED.is_started'''
     await conn.execute(q, telegram_id, first_name, last_name, telegram_link, referral_telegram_id, from_channel_link, is_started)
@@ -497,6 +497,12 @@ async def get_referral_info(user_id: int, conn: Connection = None):
 
     q = '''SELECT COUNT(rf.id)
            FROM bot_user AS usr
+           INNER JOIN bot_user AS rf ON rf.second_referral_id = usr.id
+           WHERE usr.telegram_id = $1 AND rf.is_started'''
+    all_sec_referral_count = await conn.fetchval(q, user_id) or 0
+    
+    q = '''SELECT COUNT(rf.id)
+           FROM bot_user AS usr
            INNER JOIN bot_user AS rf ON rf.referral_id = usr.id
            WHERE usr.telegram_id = $1 AND rf.from_channel_link'''
     special_referral_count = await conn.fetchval(q, user_id) or 0
@@ -515,6 +521,8 @@ async def get_referral_info(user_id: int, conn: Connection = None):
     info = {
         **balances,
         "all_referral_count": all_referral_count,
+        "all_sec_referral_count": all_sec_referral_count,
+
         "today_referral_count": today_referral_count,
         "special_referral_count": special_referral_count,
         "today_special_referral_count": today_special_referral_count
