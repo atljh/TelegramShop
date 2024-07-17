@@ -1,5 +1,5 @@
 import os
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from app.database import user, var, pyramid, product, system
 from aiogram.dispatcher.storage import FSMContext
 from app.bot.utils.buttons import InlineKeyboard
@@ -7,12 +7,11 @@ from app.bot.loader import bot, dp
 from aiogram.utils.exceptions import Throttled
 from app.bot.utils import buttons, payment, api
 
-
 async def start_menu(user_id):
     text = await var.get_text('start_text')
     
     buttons = [
-        #{'text': await var.get_text('useful_services_button'), 'data': 'useful_services'},
+        {'text': await var.get_text('clicker_button'), 'web_app': 'https://xtether.top/admin'},
         {'text': await var.get_text('profile_button'), 'data': 'profile'},]
 
     if (await system.shop_available()):
@@ -32,14 +31,14 @@ async def start_menu(user_id):
 
     # if user_id in (1993309130, 5759412217, 1627976955, 1863997693,):
         # buttons.append()
-        
 
     return {
         'text': text,
-        'reply_markup': InlineKeyboard(*buttons) 
+        'reply_markup': InlineKeyboard(*buttons)
+
     }
 
-
+@dp.throttled(rate=2)
 async def start(message: Message, state: FSMContext):
     answer = await user.get_start_answer(message.get_args())
     if answer:
@@ -50,10 +49,7 @@ async def start(message: Message, state: FSMContext):
         if reply_markup:
             await dp.current_state(chat=message.from_user.id, user=message.from_user.id).set_state('products')
         return
-    try:
-        await dp.throttle('start', rate=3)
-    except Throttled:
-        return
+
     else:
         st = await state.get_state()
         if st is None:

@@ -1,6 +1,6 @@
 from aiogram.types import (InlineKeyboardMarkup, InlineKeyboardButton,
                            ReplyKeyboardMarkup, KeyboardButton, InlineQueryResultPhoto, InlineQueryResultArticle,
-                           InputTextMessageContent, InlineQueryResult)
+                           InputTextMessageContent, InlineQueryResult, WebAppInfo)
 from typing import Dict, List
 from aiogram.utils.markdown import hide_link
 
@@ -45,6 +45,11 @@ def InlineKeyboard(*data: Dict[str, str]):
     for btn in data:
         text = str(btn.get("text"))
         bid = str(btn.get("data"))
+        web_app = btn.get("web_app")
+        if web_app:
+            button = InlineKeyboardButton(text, web_app=WebAppInfo(url=f"{web_app}"))
+            buttons.add(button)
+            continue
         if bid.startswith("http"):
             button = InlineKeyboardButton(text, url=bid)
         elif bid.startswith('inline_'):
