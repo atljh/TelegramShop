@@ -13,7 +13,7 @@ async def get_bonuses_interval():
 bonuses_interval = run_async(get_bonuses_interval)
 
 
-scheduler.add_job(pyramid.set_zero_topping_uses, 'cron', hour=1, minute=1, second=1)
+# scheduler.add_job(pyramid.set_zero_topping_uses, 'cron', hour=1, minute=1, second=1)
 scheduler.add_job(user.set_zero_referral_balance_today, 'cron', hour=1, minute=1, second=1)
 scheduler.add_job(pyramid.regulate_indexes, 'cron', hour=1, minute=1, second=1)
 

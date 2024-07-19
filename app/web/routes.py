@@ -1,6 +1,9 @@
+import aiohttp_jinja2
+import jinja2
+from aiohttp import web
+
 from app.web.loader import app
 from app.web import handlers
-from aiohttp import web
 
 app.router.add_post('/spam', handlers.spam)
 app.router.add_post('/pay_ref', handlers.pay_ref)
@@ -16,3 +19,8 @@ app.router.add_get('/user_has_access_channel', handlers.user_has_access_channel)
 app.router.add_post ('/payok_payment_callback', handlers.payok_payment_callback)
 
 
+#CLICKER
+app.router.add_get('/clicker', handlers.clicker)
+
+
+aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('app/web/templates'), enable_async=True)

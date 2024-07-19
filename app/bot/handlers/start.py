@@ -11,7 +11,7 @@ async def start_menu(user_id):
     text = await var.get_text('start_text')
     
     buttons = [
-        {'text': await var.get_text('clicker_button'), 'web_app': 'https://xtether.top/admin'},
+        {'text': await var.get_text('clicker_button'), 'web_app': 'https://xtether.top/clicker'},
         {'text': await var.get_text('profile_button'), 'data': 'profile'},]
 
     if (await system.shop_available()):
