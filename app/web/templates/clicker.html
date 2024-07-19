@@ -1,5 +1,7 @@
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <title>Start Page</title>
+    <title>Clicker</title>
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -10,190 +12,90 @@
     <meta name="robots" content="noindex,nofollow"/>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
 
-    <!--suppress CssUnresolvedCustomProperty -->
     <style>
         body {
-            font-family: sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #222222);
-            font-size: 16px;
+            font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            color-scheme: var(--tg-color-scheme);
+            background-color: #fff;
+            color: #000;
         }
-
-        a {
-            color: var(--tg-theme-link-color, #2678b6);
+        .container {
+            padding: 20px;
         }
-
-        button {
-            display: block;
+        .reserve, .balance, .timer {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .level-bar-container {
+            position: relative;
+            width: 200px;
+            height: 30px;
+            border: 2px solid #000;
+            margin: 20px auto;
+        }
+        .level-bar {
+            height: 100%;
+            width: 84%;
+            background-color: #00FF00;
+            position: absolute;
+        }
+        .level-text {
+            position: absolute;
             width: 100%;
-            font-size: 14px;
-            margin: 15px 0;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: var(--tg-theme-button-color, #50a8eb);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            cursor: pointer;
-        }
-
-        button[disabled] {
-            opacity: 0.6;
-            cursor: auto;
-            pointer-events: none;
-        }
-
-        section {
-            padding: 15px 15px 65px;
             text-align: center;
+            line-height: 30px;
         }
-
-        p {
-            margin: 40px 0 15px;
+        .coin-button {
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            line-height: 150px;
+            margin: 20px auto;
+            font-size: 24px;
+            background-color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        ul {
-            text-align: left;
+        .coin-button:hover {
+            background-color: #f0f0f0;
         }
-
-        li {
-            color: var(--tg-theme-hint-color, #a8a8a8);
-        }
-
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 7px;
-        }
-
-        pre {
-            background: rgba(0, 0, 0, .07);
-            border-radius: 4px;
-            padding: 4px;
-            margin: 7px 0;
-            word-break: break-word;
-            white-space: pre-wrap;
-            text-align: left;
-        }
-
-        .dark pre {
-            background: rgba(255, 255, 255, .15);
-        }
-
-        .ok {
-            color: green;
-        }
-
-        .err {
-            color: red;
-        }
-
-        input[type=text] {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            box-sizing: border-box;
+        .upgrade-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00FF00;
+            border: 2px solid #000;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #000;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-<section>
-    <button type="button" onclick="checkMyData();">Check My Data</button>
-
-    <hr>
-
-    <h3>Send Message Function</h3>
-    <form>
-        <label for="input-user-id"></label>
-        <input id="input-user-id" type="text" placeholder="UserID">
-
-        <label for="input-text"></label>
-        <input id="input-text" type="text" placeholder="Text">
-
-        <button type="button" onclick="setMyUserID();">Set my ID</button>
-        <button type="button" onclick="sendMessage();">Send Message</button>
-    </form>
-
-    <hr>
-
-    <h4>Output</h4>
-    <pre><code id="div-code-output"></code></pre>
-</section>
-
-
-<!--suppress JSUnresolvedFunction, JSUnresolvedVariable, JSUnusedLocalSymbols -->
-<script>
-    Telegram.WebApp.ready();
-
-    let initData = Telegram.WebApp.initData || '';
-    let initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
-
-    function checkMyData() {
-        $('button').prop('disabled', true);
-
-        $.ajax('/checkUserData', {
-            method: 'POST',
-            data: {
-                _auth: initData,
-            },
-            dataType: 'json',
-            success: function (result) {
-                $('button').prop('disabled', false);
-
-                if (result.ok) {
-                    $('#div-code-output').text('Your Hash is valid. So all is OK 😉').removeClass('err').addClass('ok').show();
-                    console.log(result.user)
-                } else {
-                    $('#div-code-output').text('😥 Hash is not ok: ' + result.error).removeClass('ok').addClass('err').show();
-                }
-            },
-            error: function (xhr) {
-                $('button').prop('disabled', false);
-                $('#div-code-output').text('Server error').removeClass('ok').addClass('err').show();
-            }
-        });
-    }
-
-    function sendMessage() {
-        $('button').prop('disabled', true);
-        let user_id = $('#input-user-id').prop('value');
-        let text = $('#input-text').prop('value');
-
-        $.ajax('/sendMessage', {
-            method: 'POST',
-            data: {
-                _auth: initData,
-                user_id: user_id,
-                text: text
-            },
-            dataType: 'json',
-            success: function (result) {
-                $('button').prop('disabled', false);
-
-                if (result.ok) {
-                    $('#div-code-output').text('Sent message to ' + user_id).removeClass('err').addClass('ok').show();
-                } else {
-                    $('#div-code-output').text(result.error).removeClass('ok').addClass('err').show();
-                }
-            },
-            error: function (xhr) {
-                $('button').prop('disabled', false);
-                $('#div-code-output').text('Server error').removeClass('ok').addClass('err').show();
-            }
-        });
-    }
-
-    function setMyUserID() {
-        $('#input-user-id').prop('value', initDataUnsafe.user.id);
-        $('#div-code-output').text('Your ID has been pasted').removeClass('err').addClass('ok').show();
-    }
-
-    Telegram.WebApp.MainButton.setText('CLOSE').show().onClick(function () {
-        Telegram.WebApp.close();
-    });
-
-</script>
+    <div class="container">
+        <div class="reserve">(РЕЗЕРВ: 10млн xcoins)</div>
+        <div class="balance">(ваш баланс: 33 xcoins)</div>
+        
+        <div class="level-bar-container">
+            <div class="level-bar"></div>
+            <div class="level-text">ВАШ УРОВЕНЬ 1<br>84/100</div>
+        </div>
+        
+        <!-- <a href="#" class="coin-button">МОНЕТА</a> -->
+        <button class="coin-button" type="button" onclick="setMyUserID();">МОНЕТА</button>
+        
+        <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
+                
+        <div class="timer">осталось до распределения бонусов: 01:42:22</div>
+    </div>
 </body>
+</html>
