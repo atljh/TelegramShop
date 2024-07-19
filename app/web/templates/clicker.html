@@ -145,6 +145,7 @@
 
                 if (result.ok) {
                     $('#div-code-output').text('Your Hash is valid. So all is OK 😉').removeClass('err').addClass('ok').show();
+                    console.log(result.user)
                 } else {
                     $('#div-code-output').text('😥 Hash is not ok: ' + result.error).removeClass('ok').addClass('err').show();
                 }

@@ -21,6 +21,6 @@ app.router.add_post ('/payok_payment_callback', handlers.payok_payment_callback)
 
 #CLICKER
 app.router.add_get('/clicker', handlers.clicker)
-
+app.router.add_post('/checkUserData', handlers.web_check_user_data)
 
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('app/web/templates'), enable_async=True)
