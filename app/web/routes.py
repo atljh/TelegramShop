@@ -21,7 +21,6 @@ app.router.add_post ('/payok_payment_callback', handlers.payok_payment_callback)
 
 #CLICKER
 app.router.add_get('/clicker', handlers.clicker_main)
-app.router.add_post('/checkUserData', handlers.web_check_user_data)
 app.router.add_post('/api/me', handlers.get_me)
 app.router.add_get('/api/next_run_time', handlers.get_next_run_time)
 
