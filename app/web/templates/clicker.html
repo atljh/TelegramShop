@@ -97,13 +97,13 @@
              xcoins
         </div>
         <pre><code id="div-code-output"></code></pre>
-        
+        <span>Ваш уровень энергии: <span id="energy_level"></span></span>
         <div class="level-bar-container">
             <div class="level-bar"></div>
-            <div class="level-text">ВАШ УРОВЕНЬ 1<br>84/100</div>
+            <div class="level-text">84/100</div>
         </div>
         
-        <button class="coin-button" type="button" onclick="checkMyData();">МОНЕТА</button>
+        <button class="coin-button" type="button" onclick="tap();">МОНЕТА</button>
         
         <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
 
@@ -129,10 +129,8 @@
                 $('button').prop('disabled', false);
                 var json = JSON.parse(result.user);
                 if (result.ok) {
-                    $('#div-code-output').text(json.telegram_link).removeClass('err').addClass('ok').show();
-                    $('#balance').text(json.xcoins);
+                    draw(json)
                 } else {
-                    $('#div-code-output').text('😥 Hash is not ok: ' + result.error).removeClass('ok').addClass('err').show();
                 }
             },
             error: function (xhr) {
@@ -142,6 +140,34 @@
         });
     }
 
+    function tap() {
+        $('button').prop('disabled', true);
+
+        $.ajax('/api/tap', {
+            method: 'POST',
+            data: {
+                _auth: initData,
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('button').prop('disabled', false);
+                var json = JSON.parse(result.user);
+                if (result.ok) {
+                    draw(json)
+                } else {
+                }
+            },
+            error: function (xhr) {
+                $('button').prop('disabled', false);
+                $('#div-code-output').text('Server error').removeClass('ok').addClass('err').show();
+            }
+        });
+    }
+
+    function draw(data){
+        $('#balance').text(data.xcoins);
+        $('#energy_level').text(data.energy_level);
+    }
 
     async function fetchNextRunTime() {
         try {

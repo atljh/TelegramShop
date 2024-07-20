@@ -27,7 +27,13 @@ class EnergyLevel(models.Model):
     class Meta:
         verbose_name = 'Уровень энергии'
         verbose_name_plural = 'Уровни энергии'
-        
+ 
+def get_first_energy_level():
+    return EnergyLevel.objects.get_or_create(level=1)[0]
+
+def get_first_energy_level_id():
+    return get_first_energy_level().id
+       
 
 class User(models.Model):
     ip = models.CharField(max_length=256, **_null_blank)
@@ -63,8 +69,10 @@ class User(models.Model):
 
     # CLICKER
     xcoins = models.FloatField(default=0)
-
-    
+    energy_level = models.ForeignKey(verbose_name="Уровень энергии",
+                                     to=EnergyLevel, on_delete=models.SET(get_first_energy_level),
+                                     default=get_first_energy_level_id
+                                    )
 
     # topping_uses_count = models.SmallIntegerField(default=0)
     # auto_topping_minutes = models.IntegerField(default=0)

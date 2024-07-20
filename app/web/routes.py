@@ -21,8 +21,11 @@ app.router.add_post ('/payok_payment_callback', handlers.payok_payment_callback)
 
 #CLICKER
 app.router.add_get('/clicker', handlers.clicker_main)
-app.router.add_post('/api/me', handlers.get_me)
-app.router.add_get('/api/next_run_time', handlers.get_next_run_time)
 
+
+app.router.add_post('/api/me', handlers.get_me)
+app.router.add_post('/api/tap', handlers.tap)
+# app.router.add_post('/api/buy', handlers.get_me)
+app.router.add_get('/api/next_run_time', handlers.get_next_run_time)
 
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('app/web/templates'), enable_async=True)

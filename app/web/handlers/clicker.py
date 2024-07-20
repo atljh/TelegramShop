@@ -36,3 +36,11 @@ async def get_me(request: Request):
     user = await clicker.get_bot_user(telegram_id)
     print(user)
     return json_response({"ok": True, "user": json.dumps(user)})
+
+async def tap(request: Request):
+    data = await request.post()
+    data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
+    telegram_id = data['user']['id']
+    await clicker.tap(telegram_id)
+    user = await clicker.get_bot_user(telegram_id)
+    return json_response({"ok": True, "user": json.dumps(user)})
