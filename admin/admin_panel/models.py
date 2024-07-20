@@ -16,17 +16,18 @@ class Mark(models.Model):
         verbose_name = 'Метка'
         verbose_name_plural = 'Метки'
 
-class EvergyLevel(models.Model):
-    level = models.IntegerField(default=1, unique=True)
-    cost = models.IntegerField(default=0)
-    energy_amount = models.IntegerField(default=0)
+class EnergyLevel(models.Model):
+    level = models.IntegerField("Уровень", default=1, unique=True)
+    cost = models.IntegerField("Стоимость в xcoins", default=0)
+    energy_amount = models.IntegerField("Количество энергии", default=0)
 
     def __str__(self):
-        return f'{self.level} - {cost} - {energy_amount}'
+        return f'{self.level} - {self.cost} - {self.energy_amount}'
     
     class Meta:
         verbose_name = 'Уровень энергии'
         verbose_name_plural = 'Уровни энергии'
+        
 
 class User(models.Model):
     ip = models.CharField(max_length=256, **_null_blank)
