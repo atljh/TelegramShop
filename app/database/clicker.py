@@ -10,7 +10,13 @@ from datetime import datetime, timedelta, date
 from threading import Thread
 
 @connection
-async def get_reserve(conn: Connection):
+async def get_reserve(conn: Connection) -> int:
     q = '''SELECT total_plus FROM bot_pyramid_info'''
     reserve = await conn.fetchval(q)
     return int(reserve * 10000) # To xcoins
+
+@connection
+async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
+    q = '''SELECT xcoins FROM bot_user WHERE telegram_id = $1'''
+    user = await conn.fetchrow(q, telegram_id)
+    return dict(user) if user else None

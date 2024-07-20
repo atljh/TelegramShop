@@ -84,23 +84,63 @@
 </head>
 <body>
     <div class="container">
-        <div class="reserve">РЕЗЕРВ: {{reserve}} xcoins</div>
+            <div class="reserve">
+                {% if reserve %}
+                РЕЗЕРВ: {{reserve}} xcoins
+                {% else %}
+                резерв 0, ожидайте новых пополнения
+                {% endif %}
+            </div>
+        
+        
         <div class="balance">(ваш баланс: 33 xcoins)</div>
+        <pre><code id="div-code-output"></code></pre>
         
         <div class="level-bar-container">
             <div class="level-bar"></div>
             <div class="level-text">ВАШ УРОВЕНЬ 1{{user}}<br>84/100</div>
         </div>
         
-        <!-- <a href="#" class="coin-button">МОНЕТА</a> -->
-        <button class="coin-button" type="button" onclick="setMyUserID();">МОНЕТА</button>
+        <button class="coin-button" type="button" onclick="checkMyData();">МОНЕТА</button>
         
         <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
 
-        <div class="timer">осталось до распределения бонусов: <span id="time_until_bonuses"></span></div>
+        <div class="timer">Осталось до распределения бонусов: <span id="time_until_bonuses"></span></div>
     </div>
 </body>
 <script>
+    Telegram.WebApp.ready();
+
+    let initData = Telegram.WebApp.initData || '';
+    let initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
+
+    function getMe() {
+        $('button').prop('disabled', true);
+
+        $.ajax('/api/me', {
+            method: 'POST',
+            data: {
+                _auth: initData,
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('button').prop('disabled', false);
+                var json = JSON.parse(result.user);
+                if (result.ok) {
+                    $('#div-code-output').text(json.user.username).removeClass('err').addClass('ok').show();
+                    console.log(json.me)
+                } else {
+                    $('#div-code-output').text('😥 Hash is not ok: ' + result.error).removeClass('ok').addClass('err').show();
+                }
+            },
+            error: function (xhr) {
+                $('button').prop('disabled', false);
+                $('#div-code-output').text('Server error').removeClass('ok').addClass('err').show();
+            }
+        });
+    }
+
+
     async function fetchNextRunTime() {
         try {
             const response = await fetch('/api/next_run_time'); 
@@ -139,6 +179,12 @@
         updateCountdown();
     }
 
-    window.onload = initializeCountdown;
+    async function main(){
+        initializeCountdown()
+        getMe()
+    }
+
+    window.onload = main;
+
 </script>
 </html>

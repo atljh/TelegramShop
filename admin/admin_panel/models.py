@@ -43,11 +43,16 @@ class User(models.Model):
 
     balance_from_sec_referral = models.FloatField(verbose_name="Заработано с рефа второго ур", default=0)
     balance_from_sec_referral_today = models.FloatField(verbose_name="Заработано с рефа второго ур сегодня",default=0)
-
     
     is_special_referral = models.BooleanField(default=False)
     from_channel_link = models.BooleanField(default=False)
     is_started = models.BooleanField(default=True)
+
+
+    # CLICKER
+    xcoins = models.FloatField(default=0)
+
+    
 
     # topping_uses_count = models.SmallIntegerField(default=0)
     # auto_topping_minutes = models.IntegerField(default=0)
