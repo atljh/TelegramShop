@@ -17,6 +17,6 @@ async def get_reserve(conn: Connection) -> int:
 
 @connection
 async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
-    q = '''SELECT xcoins FROM bot_user WHERE telegram_id = $1'''
+    q = '''SELECT telegram_link, xcoins FROM bot_user WHERE telegram_id = $1'''
     user = await conn.fetchrow(q, telegram_id)
     return dict(user) if user else None

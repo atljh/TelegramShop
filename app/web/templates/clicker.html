@@ -101,7 +101,7 @@
             <div class="level-text">ВАШ УРОВЕНЬ 1{{user}}<br>84/100</div>
         </div>
         
-        <button class="coin-button" type="button" onclick="checkMyData();">МОНЕТА</button>
+        <button class="coin-button" type="button" onclick="checkMyData()    ;">МОНЕТА</button>
         
         <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
 
@@ -127,8 +127,7 @@
                 $('button').prop('disabled', false);
                 var json = JSON.parse(result.user);
                 if (result.ok) {
-                    $('#div-code-output').text(json.user.username).removeClass('err').addClass('ok').show();
-                    console.log(json.me)
+                    $('#div-code-output').text(json.telegram_link).removeClass('err').addClass('ok').show();
                 } else {
                     $('#div-code-output').text('😥 Hash is not ok: ' + result.error).removeClass('ok').addClass('err').show();
                 }
