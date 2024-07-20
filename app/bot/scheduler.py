@@ -28,13 +28,6 @@ def schedule_jobs():
 
 update_bonuses_job = schedule_jobs()
 
-def time_to_next_run(job):
-    next_run_time = job.next_run_time
-    if next_run_time:
-        now = datetime.now()
-        return next_run_time - now
-    else:
-        return None
 
 
 # scheduler.add_job(utils.check_p2pkassa, 'interval', minutes=5)

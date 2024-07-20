@@ -30,6 +30,7 @@
         .reserve, .balance, .timer {
             font-size: 16px;
             margin-bottom: 10px;
+            margin: 20px;
         }
         .level-bar-container {
             position: relative;
@@ -83,7 +84,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="reserve">(РЕЗЕРВ: 10млн xcoins)</div>
+        <div class="reserve">РЕЗЕРВ: {{reserve}} xcoins</div>
         <div class="balance">(ваш баланс: 33 xcoins)</div>
         
         <div class="level-bar-container">
@@ -95,8 +96,8 @@
         <button class="coin-button" type="button" onclick="setMyUserID();">МОНЕТА</button>
         
         <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
-                
-        <div class="timer">осталось до распределения бонусов: <span id="time_until_bonuses">{{time_until_bonuses}}</span></div>
+
+        <div class="timer">осталось до распределения бонусов: <span id="time_until_bonuses"></span></div>
     </div>
 </body>
 <script>
