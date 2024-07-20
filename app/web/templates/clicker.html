@@ -100,7 +100,9 @@
         <span>Ваш уровень энергии: <span id="energy_level"></span></span>
         <div class="level-bar-container">
             <div class="level-bar"></div>
-            <div class="level-text">84/100</div>
+            <div class="level-text">
+                <span id="energy_amount"></span>/<span id="total_energy_amount"></span>
+            </div>
         </div>
         
         <button class="coin-button" type="button" onclick="tap();">МОНЕТА</button>
@@ -167,6 +169,8 @@
     function draw(data){
         $('#balance').text(data.xcoins);
         $('#energy_level').text(data.energy_level);
+        $('#energy_amount').text(data.energy_amount);
+        $('#total_energy_amount').text(data.total_energy_amount);
     }
 
     async function fetchNextRunTime() {

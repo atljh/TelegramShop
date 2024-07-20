@@ -17,12 +17,30 @@ async def get_reserve(conn: Connection) -> int:
 
 @connection
 async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
-    q = '''SELECT telegram_link, xcoins, (select level as energy_level from admin_panel_energylevel where id = bot_user.energy_level_id) FROM bot_user WHERE telegram_id = $1'''
+    q = '''
+    SELECT 
+        bot_user.telegram_link, 
+        bot_user.xcoins, 
+        admin_panel_energylevel.level AS energy_level, 
+        admin_panel_energylevel.energy_amount AS total_energy_amount, 
+        bot_user.energy_amount
+    FROM 
+        bot_user 
+    JOIN 
+        admin_panel_energylevel 
+    ON 
+        bot_user.energy_level_id = admin_panel_energylevel.id
+    WHERE 
+        bot_user.telegram_id = $1
+    '''
     user = await conn.fetchrow(q, telegram_id)
     return dict(user) if user else None
 
 @connection
 async def tap(telegram_id: int, conn: Connection):
-    q = '''UPDATE bot_user
-           SET xcoins = xcoins + 1'''
+    q = '''
+    UPDATE bot_user
+    SET xcoins = xcoins + 1,
+        energy_amount = energy_amount - 1
+        '''
     await conn.execute(q)
