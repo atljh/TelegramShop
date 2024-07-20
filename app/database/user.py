@@ -567,7 +567,7 @@ async def get_referral_info(user_id: int, conn: Connection = None):
 async def set_zero_referral_balance_today(conn: Connection):
     q = '''UPDATE bot_user
            SET balance_from_referral_today = 0,
-           SET balance_from_sec_referral_today = 0'''
+           balance_from_sec_referral_today = 0'''
     await conn.execute(q)
 
 

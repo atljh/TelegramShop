@@ -17,6 +17,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            
             text-align: center;
             margin: 0;
             padding: 0;
@@ -87,7 +88,7 @@
         
         <div class="level-bar-container">
             <div class="level-bar"></div>
-            <div class="level-text">ВАШ УРОВЕНЬ 1<br>84/100</div>
+            <div class="level-text">ВАШ УРОВЕНЬ 1{{user}}<br>84/100</div>
         </div>
         
         <!-- <a href="#" class="coin-button">МОНЕТА</a> -->
@@ -95,7 +96,48 @@
         
         <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
                 
-        <div class="timer">осталось до распределения бонусов: 01:42:22</div>
+        <div class="timer">осталось до распределения бонусов: <span id="time_until_bonuses">{{time_until_bonuses}}</span></div>
     </div>
 </body>
+<script>
+    async function fetchNextRunTime() {
+        try {
+            const response = await fetch('/api/next_run_time'); 
+            const data = await response.json();
+            return new Date(data.nextRunTime);
+        } catch (error) {
+            console.error('Error fetching next run time:', error);
+            return null;
+        }
+    }
+
+    async function initializeCountdown() {
+        const nextRunTime = await fetchNextRunTime();
+        if (!nextRunTime) {
+            document.getElementById("time_until_bonuses").innerHTML = "Error fetching time";
+            return;
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const timeRemaining = nextRunTime - now;
+
+            if (timeRemaining > 0) {
+                const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                document.getElementById("time_until_bonuses").innerHTML = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById("time_until_bonuses").innerHTML = "00:00:00";
+                clearInterval(countdownInterval);
+                initializeCountdown()
+            }
+        }
+
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    }
+
+    window.onload = initializeCountdown;
+</script>
 </html>
