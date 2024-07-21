@@ -34,7 +34,10 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
         bot_user.telegram_id = $1
     '''
     user = await conn.fetchrow(q, telegram_id)
-    return dict(user) if user else None
+    reserve = await get_reserve()
+    user = dict(user) if user else None
+    user.update({'reserve': reserve})
+    return user
 
 @connection
 async def get_user_energy(telegram_id: int, conn: Connection) -> bool:

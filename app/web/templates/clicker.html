@@ -77,6 +77,7 @@
             border: 2px solid #000;
             margin-top: 20px;
             text-decoration: none;
+            cursor: pointer;
             color: #000;
             font-size: 16px;
         }
@@ -86,7 +87,7 @@
     <div class="container">
             <div class="reserve">
                 {% if reserve %}
-                РЕЗЕРВ: {{reserve}} xcoins
+                РЕЗЕРВ: <span id="reserve">{{reserve}}</span> xcoins
                 {% else %}
                 резерв 0, ожидайте новых пополнения
                 {% endif %}
@@ -195,6 +196,8 @@
         $('#energy_level').text(data.energy_level);
         $('#energy_amount').text(data.energy_amount);
         $('#total_energy_amount').text(data.total_energy_amount);
+        $('#reserve').text(data.reserve);
+
     }
 
     async function fetchNextRunTime() {
