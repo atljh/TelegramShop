@@ -68,8 +68,11 @@ async def tap(telegram_id: int, conn: Connection) -> dict:
 async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
     user = await get_bot_user(telegram_id)
     user_xcoins = user.get('xcoins')
-    user_energy_level = user.get('energy_level')
-    next_energy_level = int(user_energy_level) + 1
+    user_energy_level = int(user.get('energy_level'))
+    if user_energy_level == 7:
+        return await get_bot_user(telegram_id)
+    next_energy_level = user_energy_level + 1
+    
     q = '''
     SELECT
         id, cost
