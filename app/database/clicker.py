@@ -21,22 +21,28 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     SELECT 
         bot_user.telegram_link, 
         bot_user.xcoins, 
-        admin_panel_energylevel.level AS energy_level, 
-        admin_panel_energylevel.energy_amount AS total_energy_amount, 
-        bot_user.energy_amount
+        current_level.level AS energy_level, 
+        current_level.energy_amount AS total_energy_amount, 
+        bot_user.energy_amount,
+        next_level.cost AS next_level_cost,
+        next_level.energy_amount AS next_level_energy
     FROM 
         bot_user 
     JOIN 
-        admin_panel_energylevel 
+        admin_panel_energylevel AS current_level
     ON 
-        bot_user.energy_level_id = admin_panel_energylevel.id
+        bot_user.energy_level_id = current_level.id
+    LEFT JOIN 
+        admin_panel_energylevel AS next_level
+    ON 
+        next_level.level = current_level.level + 1
     WHERE 
-        bot_user.telegram_id = $1
+        bot_user.telegram_id = $1;
     '''
     user = await conn.fetchrow(q, telegram_id)
     reserve = await get_reserve()
     user = dict(user) if user else None
-    user.update({'reserve': reserve})
+    user.update({'reserve': reserve, 'next_level_cost': user.get('next_level_cost')/10000})
     return user
 
 @connection
