@@ -100,7 +100,7 @@
         <pre><code id="div-code-output"></code></pre>
         <span>Ваш уровень энергии: <span id="energy_level"></span></span>
         <div class="level-bar-container">
-            <div class="level-bar"></div>
+            <div class="level-bar" id="level-bar"></div>
             <div class="level-text">
                 <span id="energy_amount"></span>/<span id="total_energy_amount"></span>
             </div>
@@ -200,6 +200,10 @@
         $('#reserve').text(data.reserve);
         $('#next_level_cost').text(data.next_level_cost);
         $('#next_level_energy').text(data.next_level_energy);
+
+        const progressBar = document.getElementById('level-bar');
+        const percentage = (data.energy_amount / data.total_energy_amount) * 100;
+        progressBar.style.width = `${percentage}%`;
     }
 
     async function fetchNextRunTime() {
