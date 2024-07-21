@@ -36,11 +36,20 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     user = await conn.fetchrow(q, telegram_id)
     return dict(user) if user else None
 
+
 @connection
 async def tap(telegram_id: int, conn: Connection):
+    xcoins_for_click = await var.get_var('xcoins_for_click', int)
+    
     q = '''
     UPDATE bot_user
-    SET xcoins = xcoins + 1,
+    SET xcoins = xcoins + $1,
         energy_amount = energy_amount - 1
-        '''
-    await conn.execute(q)
+    '''
+    await conn.execute(q, xcoins_for_click)
+
+@connection
+async def update_energy(conn: Connection):
+    q = '''
+    '''
+    

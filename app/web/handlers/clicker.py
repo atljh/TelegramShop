@@ -18,18 +18,18 @@ async def clicker_main(request: Request):
     )
 
 async def web_check_user_data(request: Request):
-    """Check and return user data."""
+    """Check and return user data"""
     data = await request.post()
     data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
     return json_response({"ok": True, "user": data.as_json()})
 
 async def get_next_run_time(request: Request):
-    """Get the next scheduled run time for updating bonuses."""
+    """Get the next scheduled run time for updating bonuses"""
     next_run_time_str = update_bonuses_job.next_run_time.isoformat()
     return json_response({"nextRunTime": next_run_time_str})
 
 async def get_me(request: Request):
-    """Get the current user's information."""
+    """Get the current user's information"""
     data = await request.post()
     data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
     telegram_id = data['user']['id']

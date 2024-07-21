@@ -16,12 +16,10 @@ app.router.add_post('/generate_knb', handlers.generate_knb)
 app.router.add_get('/distribute_reserve', handlers.distribute_reserve)
 app.router.add_get('/user_has_access_channel', handlers.user_has_access_channel)
 
-app.router.add_post ('/payok_payment_callback', handlers.payok_payment_callback)
-
+app.router.add_post('/payok_payment_callback', handlers.payok_payment_callback)
 
 #CLICKER
 app.router.add_get('/clicker', handlers.clicker_main)
-
 
 app.router.add_post('/api/me', handlers.get_me)
 app.router.add_post('/api/tap', handlers.tap)
