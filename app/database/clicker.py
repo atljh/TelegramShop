@@ -65,7 +65,7 @@ async def tap(telegram_id: int, conn: Connection) -> dict:
     return await get_bot_user(telegram_id)
 
 @connection
-async def buy_energy_level(telegram_id: int, conn: Connection):
+async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
     user = await get_bot_user(telegram_id)
     user_xcoins = user.get('xcoins')
     user_energy_level = user.get('energy_level')
@@ -92,8 +92,8 @@ async def buy_energy_level(telegram_id: int, conn: Connection):
         xcoins - $3 >= 0
     RETURNING 1
     '''
-    result = bool(await conn.fetchval(q, telegram_id, level_id, level_cost))
-    print(result)
+    await conn.execute(q, telegram_id, level_id, level_cost)
+    return await get_bot_user(telegram_id)
     
     
 @connection

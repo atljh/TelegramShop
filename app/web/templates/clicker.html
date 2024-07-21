@@ -107,7 +107,7 @@
         
         <button class="coin-button" type="button" onclick="tap();">МОНЕТА</button>
         
-        <button class="upgrade-button" type="button" onclick="setMyUserID();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
+        <button class="upgrade-button" type="button" onclick="upgradeEnergyLevel();">ПРОКАЧАТЬ УРОВЕНЬ 1$<br>+200 ЭНЕРГИИ</button>
 
         <div class="timer">Осталось до распределения бонусов: <span id="time_until_bonuses"></span></div>
     </div>
@@ -146,6 +146,30 @@
         $('button').prop('disabled', true);
 
         $.ajax('/api/tap', {
+            method: 'POST',
+            data: {
+                _auth: initData,
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('button').prop('disabled', false);
+                var json = JSON.parse(result.user);
+                if (result.ok) {
+                    draw(json)
+                } else {
+                }
+            },
+            error: function (xhr) {
+                $('button').prop('disabled', false);
+                $('#div-code-output').text('Server error').removeClass('ok').addClass('err').show();
+            }
+        });
+    }
+
+    function tap() {
+        $('button').prop('disabled', true);
+
+        $.ajax('/api/buy', {
             method: 'POST',
             data: {
                 _auth: initData,
