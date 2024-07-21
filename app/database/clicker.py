@@ -37,7 +37,7 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     return dict(user) if user else None
 
 @connection
-async def get_user_energy(telegram_id: int, conn: Connection):
+async def get_user_energy(telegram_id: int, conn: Connection) -> bool:
     q = '''
     SELECT 
         energy_amount 
@@ -50,12 +50,11 @@ async def get_user_energy(telegram_id: int, conn: Connection):
     return energy_amount > 0
 
 @connection
-async def tap(telegram_id: int, conn: Connection):
+async def tap(telegram_id: int, conn: Connection) -> dict:
     xcoins_for_click = await var.get_var('xcoins_for_click', int)
-    
     user_have_energy = await get_user_energy(telegram_id)
     if not user_have_energy:
-        return get_bot_user(telegram_id)
+        return await get_bot_user(telegram_id)
     q = '''
     UPDATE bot_user
     SET xcoins = xcoins + $1,
@@ -63,8 +62,40 @@ async def tap(telegram_id: int, conn: Connection):
     WHERE telegram_id = $2;
     '''
     await conn.execute(q, xcoins_for_click, telegram_id)
-    return get_bot_user(telegram_id)
+    return await get_bot_user(telegram_id)
 
+@connection
+async def buy_energy_level(telegram_id: int, conn: Connection):
+    user = await get_bot_user(telegram_id)
+    user_xcoins = user.get('xcoins')
+    user_energy_level = user.get('energy_level')
+    next_energy_level = int(user_energy_level) + 1
+    q = '''
+    SELECT
+        id, cost
+    FROM
+        admin_panel_energylevel
+    WHERE level = $1
+    '''
+    next_energy_level_obj = await conn.fetchrow(q, next_energy_level)
+    level_id = next_energy_level_obj.get('id')
+    level_cost = next_energy_level_obj.get('cost')
+    q = '''
+    UPDATE
+        bot_user
+    SET
+        energy_level_id = $2,
+        xcoins = xcoins - $3
+    WHERE
+        telegram_id = $1 
+    AND
+        xcoins - $3 >= 0
+    RETURNING 1
+    '''
+    result = bool(await conn.fetchval(q, telegram_id, level_id, level_cost))
+    print(result)
+    
+    
 @connection
 async def update_energy(conn: Connection):
     q = '''
