@@ -95,7 +95,17 @@ async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
         xcoins - $3 >= 0
     RETURNING 1
     '''
-    await conn.execute(q, telegram_id, level_id, level_cost)
+    res = bool(await conn.execute(q, telegram_id, level_id, level_cost))
+    if res:
+        level_cost_in_dollar = level_cost / 10000 * 0.5
+        q = '''
+        UPDATE
+            bot_pyramid_info
+        SET
+            reserve = reserve + $1,
+            total_plus = total_plus + $1
+        '''
+        await conn.execute(q, level_cost_in_dollar)
     return await get_bot_user(telegram_id)
     
     

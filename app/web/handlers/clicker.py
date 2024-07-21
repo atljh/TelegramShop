@@ -47,5 +47,5 @@ async def upgrade_energy_level(request: Request):
     data = await request.post()
     data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
     telegram_id = data['user']['id']
-    user = await upgrade_energy_level(telegram_id)
+    user = await clicker.upgrade_energy_level(telegram_id)
     return json_response({"ok": True, "user": json.dumps(user)})
