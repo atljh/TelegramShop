@@ -44,7 +44,7 @@ def pay_ref(id):
     return web.Response(text='ok')
 
 class UserAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('ip', 'balance', 'coin_balance', 'first_name', 'last_name', 'telegram_link', 'joined_at', 'status', 'account_type', 'mark', 'referral',)
+    list_display = ('first_name', 'ip', 'balance', 'xcoins', 'energy_level', 'last_name', 'telegram_link', 'joined_at', 'referral',)
     # readonly_fields = ('account_type', 'referral', )
     search_fields = ('id', 'first_name', 'last_name', 'telegram_link', 'telegram_id', 'ip', 'telegram_id', )
     list_filter = ('status', AccountTypeFilter)

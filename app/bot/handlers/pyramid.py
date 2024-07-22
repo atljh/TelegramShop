@@ -432,6 +432,7 @@ async def input_invest_coins_amount(message: Message, state: FSMContext):
         if amount > (await user.balance(message.from_user.id)).get('xcoins'):
             await message.delete()
             return
+        
         if await user.deposit_with_xcoins(message.from_user.id, amount):
             await pyramid.add(message.from_user.id, int(amount/10000))
         else:
