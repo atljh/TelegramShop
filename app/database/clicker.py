@@ -65,6 +65,7 @@ async def get_user_energy(telegram_id: int, conn: Connection) -> bool:
 
 @connection
 async def tap(telegram_id: int, conn: Connection) -> dict:
+    await update_energy(telegram_id)
     xcoins_for_click = await var.get_var('xcoins_for_click', int)
     user_have_energy = await get_user_energy(telegram_id)
     if not user_have_energy or not (await get_reserve()):
@@ -125,6 +126,41 @@ async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
     
 @connection
 async def update_energy(conn: Connection):
+    energy_recover_percent = await var.get_var('energy_recover_percent', float)
     q = '''
+    SELECT
+        id, level, energy_amount
+    FROM
+        admin_panel_energylevel
     '''
-    
+    energy_levels = await conn.fetch(q) 
+    for lvl in energy_levels:
+        q = '''
+        SELECT
+            bot_user.telegram_id
+        FROM
+            bot_user
+        JOIN
+            admin_panel_energylevel 
+        ON
+            bot_user.energy_level_id = admin_panel_energylevel.id
+        WHERE
+            admin_panel_energylevel.id = $1
+        AND 
+            bot_user.energy_amount < $2;
+        '''
+        users = await conn.fetch(q, lvl.get('id'), lvl.get('energy_amount'))
+        energy_plus = int(lvl.get('energy_amount') * energy_recover_percent / 100)
+        for user in users:
+            q = '''
+            UPDATE
+                bot_user
+            SET
+                energy_amount = CASE
+                    WHEN energy_amount + $2 > $3 THEN $3
+                    ELSE energy_amount + $2
+                END
+            WHERE
+                telegram_id = $1   
+            '''
+            await conn.execute(q, user.get('telegram_id'), energy_plus, lvl.get('energy_amount'))
