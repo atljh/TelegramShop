@@ -192,8 +192,16 @@
         $('#energy_level').text(data.energy_level);
         $('#energy_amount').text(data.energy_amount);
         $('#total_energy_amount').text(data.total_energy_amount);
-        $('#next_level_cost').text(data.next_level_cost);
-        $('#next_level_energy').text(data.next_level_energy);
+        if (data.next_level_cost === null || data.next_level_cost === undefined) {
+            $('#next_level_cost').text('');
+            $('#next_level_energy').text('');
+            $('.upgrade-button').html('ПРОКАЧАТЬ УРОВЕНЬ'); // Default text when cost is null
+        } else {
+            $('#next_level_cost').text(data.next_level_cost);
+            $('#next_level_energy').text(data.next_level_energy);
+            $('.upgrade-button').html('ПРОКАЧАТЬ УРОВЕНЬ <span id="next_level_cost">' + data.next_level_cost + '</span>$<br>+<span id="next_level_energy">' + data.next_level_energy + '</span> ЭНЕРГИИ');
+        }
+        
         if (data.reserve > 0){
             $('#reserve').text(`${data.reserve} xcoins`);
         }

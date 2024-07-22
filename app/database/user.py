@@ -19,9 +19,9 @@ async def bot_start(referral_telegram_id: str, telegram_id: int, first_name: str
     
     q = '''INSERT INTO bot_user(telegram_id, first_name, last_name, telegram_link, 
                         joined_at, status, balance, coin_balance, pyramid_balance, referral_id, second_referral_id,
-                        balance_from_referral, balance_from_referral_today,balance_from_sec_referral,balance_from_sec_referral_today, is_special_referral, from_channel_link, is_started)
+                        balance_from_referral, balance_from_referral_today,balance_from_sec_referral,balance_from_sec_referral_today, is_special_referral, from_channel_link, is_started, xcoins, energy_level_id, energy_amount)
                VALUES($1, $2, $3, $4, NOW(), 'frod', 0, 0, 0,
-                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, 0, 0, False, $6, $7)
+                      (select id from bot_user where telegram_id=$5 limit 1), (select referral_id from bot_user where telegram_id=$5 limit 1), 0, 0, 0, 0, False, $6, $7, 0, 2, 100)
             ON CONFLICT(telegram_id) DO UPDATE SET
             is_started = EXCLUDED.is_started'''
     await conn.execute(q, telegram_id, first_name, last_name, telegram_link, referral_telegram_id, from_channel_link, is_started)

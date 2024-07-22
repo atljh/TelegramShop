@@ -42,10 +42,15 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     user_row = await conn.fetchrow(q, telegram_id)
     user = dict(user_row) if user_row else None
     reserve = await get_reserve()
+    user_energy_level = int(user.get('energy_level'))
+    if user_energy_level == 7:
+        next_level_cost = None
+    else:
+        next_level_cost = user.get('next_level_cost')/10000
     user.update(
         {
             'reserve': reserve,
-            'next_level_cost': user.get('next_level_cost')/10000
+            'next_level_cost': next_level_cost
         }
     )
     return user
