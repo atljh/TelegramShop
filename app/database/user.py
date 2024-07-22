@@ -233,14 +233,14 @@ async def update_frod(id: int, ip: str, user_agent: str, conn: Connection):
 
 @connection
 async def balance(user_id: int, conn: Connection):
-    q = '''SELECT balance, coin_balance, pyramid_balance
+    q = '''SELECT balance, xcoins, pyramid_balance
            FROM bot_user
            WHERE telegram_id = $1'''
     data = await conn.fetchrow(q, user_id)
     if data:
         return dict(data)
 
-    return {"balance": 0, "coin_balance": 0, "pyramid_balance": 0}
+    return {"balance": 0, "xcoins": 0, "pyramid_balance": 0}
 
 
 @connection
@@ -375,7 +375,7 @@ async def create_deposit(user_id: int, amount: int, gateway: str, conn: Connecti
 
 
 @connection
-async def pay_in_shop(user_id: int, amount: int, pyramid: bool = False, in_shop=False, conn: Connection = None) -> bool:
+async def pay_in_shop(user_id: int, amount: int, pyramid: bool = False, in_shop: bool = False, conn: Connection = None) -> bool:
     q = '''UPDATE bot_user
             SET balance = balance - $2
             WHERE telegram_id = $1 AND balance - $2 >= 0
@@ -877,3 +877,13 @@ async def pay_ref(user_id: int, conn: Connection):
             q = '''UPDATE bot_purchase SET referral_payed = True WHERE id = $1'''
             await conn.execute(q, product.get('id'))
     return users_to_send
+
+
+@connection
+async def deposit_with_xcoins(telegram_id: int, amount: int, conn: Connection):
+    q = '''UPDATE bot_user
+            SET xcoins = xcoins - $2
+            WHERE telegram_id = $1 AND xcoins - $2 >= 0
+            RETURNING 1'''
+    res = bool(await conn.fetchval(q, telegram_id, amount))
+    return res

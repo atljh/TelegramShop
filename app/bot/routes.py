@@ -80,9 +80,11 @@ dp.register_callback_query_handler(handlers.pay_from_balance, lambda e: e.data =
 
 dp.register_callback_query_handler(handlers.pyramid_info, lambda e: e.data == 'pyramid_info', state='*')
 dp.register_callback_query_handler(handlers.pyramid_info_handler, state='pyramid_info')
+dp.register_callback_query_handler(handlers.pyramid_info_handler, lambda e: e.data == 'deposit_balance', state='*')
 dp.register_callback_query_handler(handlers.pyramid_info_handler, lambda e: e.data == 'pyramid_history', state='*')
 dp.register_callback_query_handler(handlers.pyramid_info_handler, lambda e: e.data == 'topping', state='*')
 dp.register_message_handler(handlers.input_invest_amount, state='input_invest_amount')
+dp.register_message_handler(handlers.input_invest_coins_amount, state='input_invest_coins_amount')
 dp.register_message_handler(handlers.input_topping_positions, state='input_invest_topping')
 dp.register_message_handler(handlers.input_minutes_autotopping, state='input_minutes_autotopping')
 dp.register_message_handler(handlers.input_takemoney, state='input_takemoney')

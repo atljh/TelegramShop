@@ -62,7 +62,7 @@ async def get_pyramid_info(user_id):
     image = await var.get_var("pyramid_info_image", str)
 
     buttons = [
-        {'text': await var.get_text('invest_button'), 'data': 'invest'},
+        {'text': await var.get_text('invest_button'), 'data': 'deposit_balance'},
         {'text': await var.get_text('refresh_button'), 'data': 'refresh'},
         {'text': await var.get_text('pyramid_history_button'), 'data': 'pyramid_history'},
         {'text': await var.get_text('main_menu_button'), 'data': 'main'}
@@ -99,6 +99,33 @@ async def pyramid_info(callback: CallbackQuery, state: FSMContext):
 
 
 async def pyramid_info_handler(callback: CallbackQuery, state: FSMContext):
+    
+    if callback.data == 'deposit_balance':
+        text = await var.get_text("deposit_balance")
+        balance = await user.balance(callback.from_user.id)
+        text = text.format(balance=balance.get('balance'), xcoins=balance.get('xcoins'))
+
+        image = await var.get_var("input_invest_amount_image", str)
+        reply_markup = InlineKeyboard(
+            {'text': 'xTether', 'data': 'invest'},
+            {'text': 'xcoins', 'data': 'invest_coins'},
+
+            {'text': await var.get_text('back_button'), 'data': 'pyramid_info'}
+        )
+        try:
+            await callback.message.delete()
+            data = await state.get_data()
+            message_to_delete = data.get('message_id')
+            await bot.delete_message(chat_id=callback.from_user.id, message_id=message_to_delete)
+        except Exception as e:
+            pass
+        if image:
+            await callback.message.answer_photo(photo=image, caption=text, reply_markup=reply_markup)
+        else:
+            await callback.message.answer(text=text, reply_markup=reply_markup)
+        await state.set_state("pyramid_info")
+        return
+    
     if callback.data == 'invest':
         text = await var.get_text("input_invest_amount")
         balance = await user.balance(callback.from_user.id)
@@ -106,7 +133,7 @@ async def pyramid_info_handler(callback: CallbackQuery, state: FSMContext):
 
         image = await var.get_var("input_invest_amount_image", str)
         reply_markup = InlineKeyboard(
-            {'text': await var.get_text('back_button'), 'data': 'pyramid_info'}
+            {'text': await var.get_text('back_button'), 'data': 'deposit_balance'}
         )
         try:
             await callback.message.delete()
@@ -123,6 +150,30 @@ async def pyramid_info_handler(callback: CallbackQuery, state: FSMContext):
         await state.set_state("input_invest_amount")
         return
 
+    if callback.data == 'invest_coins':
+        text = await var.get_text("input_invest_coins_amount")
+        balance = await user.balance(callback.from_user.id)
+        text = text.format(xcoins=balance.get('xcoins'))
+
+        image = await var.get_var("input_invest_amount_image", str)
+        reply_markup = InlineKeyboard(
+            {'text': await var.get_text('back_button'), 'data': 'deposit_balance'}
+        )
+        try:
+            await callback.message.delete()
+            data = await state.get_data()
+            message_to_delete = data.get('message_id')
+            await bot.delete_message(chat_id=callback.from_user.id, message_id=message_to_delete)
+        except Exception as e:
+            pass
+        if image:
+            await callback.message.answer_photo(photo=image, caption=text, reply_markup=reply_markup)
+        else:
+            await callback.message.answer(text=text, reply_markup=reply_markup)
+
+        await state.set_state("input_invest_coins_amount")
+        return
+    
     if callback.data == 'topping':
         try:
             await dp.throttle('start', rate=3)
@@ -366,8 +417,50 @@ async def input_invest_amount(message: Message, state: FSMContext):
     else:
         await message.answer(text=text)
         await message.answer(text=my_investitions, reply_markup=reply_markup)
+    await state.set_state("pyramid_info")
+    
+    
+async def input_invest_coins_amount(message: Message, state: FSMContext):
+    try:
+        amount = int(message.text)
+        min_investition_amount = await var.get_var('min_investition_amount', int)
+        max_investition_amount = await var.get_var('max_investition_amount', int)
+        if amount < min_investition_amount*10000 or amount > max_investition_amount*10000:
+            await message.delete()
+            return
 
+        if amount > (await user.balance(message.from_user.id)).get('xcoins'):
+            await message.delete()
+            return
+        if await user.deposit_with_xcoins(message.from_user.id, amount):
+            await pyramid.add(message.from_user.id, int(amount/10000))
+        else:
+            return
+    except ValueError as e:
+        try:
+            if bool(float(message.text)):
+                await message.answer(await var.get_text('only_integer_invest'))
+        except Exception as e:
+            await message.delete()
+            return
+        await message.delete()
+        return
+    except Exception as e:
+        print(e)
+        await message.delete()
+        return
+    
+    await message.answer(await var.get_text('successful_invest'))
 
+    image, text, reply_markup, my_investitions = await get_pyramid_info(message.from_user.id)
+
+    if image:
+        await message.answer_photo(photo=image, caption=text)
+        await message.answer(text=my_investitions, reply_markup=reply_markup)
+
+    else:
+        await message.answer(text=text)
+        await message.answer(text=my_investitions, reply_markup=reply_markup)
     await state.set_state("pyramid_info")
 
 
@@ -426,6 +519,7 @@ async def input_topping_positions(message: Message, state: FSMContext):
 
 
 async def takemoney(message: Message, state: FSMContext):
+    return
     try:
         await dp.throttle('start', rate=2)
     except Throttled:

@@ -31,7 +31,10 @@ async def get_next_run_time(request: Request):
 async def get_me(request: Request):
     """Get the current user's information"""
     data = await request.post()
-    data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
+    try:
+        data = safe_parse_webapp_init_data(dp.bot._token, data["_auth"])
+    except ValueError:
+        return json_response({"ok": True}   )
     telegram_id = data['user']['id']
     user = await clicker.get_bot_user(telegram_id)
     return json_response({"ok": True, "user": json.dumps(user)})
