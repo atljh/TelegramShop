@@ -18,7 +18,7 @@ def schedule_jobs():
     scheduler.add_job(user.set_zero_referral_balance_today, 'cron', hour=1, minute=1, second=1)
     scheduler.add_job(pyramid.regulate_indexes, 'cron', hour=1, minute=1, second=1)    
     update_bonuses_job = scheduler.add_job(pyramid.update_reserve_and_balance, 'interval', hours=bonuses_interval)
-    scheduler.add_job(clicker.update_energy, 'interval', seconds=10)
+    scheduler.add_job(clicker.update_energy, 'interval', minutes=1)
 
     scheduler.add_job(user.update_currency_exchange, 'cron', hour=23, minute=59, second=59)
     scheduler.add_job(pyramid.update_system_fee, 'interval', minutes=10)

@@ -14,7 +14,7 @@ async def clicker_main(request: Request):
     if reserve <= 0:
         reserve = None
     return await aiohttp_jinja2.render_template_async(
-        'clicker.html', request, {'reserve': reserve}
+        'clicker.html', request, {}
     )
 
 async def web_check_user_data(request: Request):

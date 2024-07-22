@@ -65,7 +65,6 @@ async def get_user_energy(telegram_id: int, conn: Connection) -> bool:
 
 @connection
 async def tap(telegram_id: int, conn: Connection) -> dict:
-    await update_energy(telegram_id)
     xcoins_for_click = await var.get_var('xcoins_for_click', int)
     user_have_energy = await get_user_energy(telegram_id)
     if not user_have_energy or not (await get_reserve()):

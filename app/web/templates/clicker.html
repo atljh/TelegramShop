@@ -86,11 +86,7 @@
 <body>
     <div class="container">
             <div class="reserve">
-                {% if reserve %}
-                РЕЗЕРВ: <span id="reserve">{{reserve}}</span> xcoins
-                {% else %}
-                резерв 0, ожидайте новых пополнения
-                {% endif %}
+                РЕЗЕРВ: <span id="reserve"></span>
             </div>
         <div class="balance">Ваш баланс:
              <code id="balance">
@@ -133,7 +129,6 @@
                 var json = JSON.parse(result.user);
                 if (result.ok) {
                     draw(json)
-                    console.log(result.user)
                 } else {
                 }
             },
@@ -197,10 +192,14 @@
         $('#energy_level').text(data.energy_level);
         $('#energy_amount').text(data.energy_amount);
         $('#total_energy_amount').text(data.total_energy_amount);
-        $('#reserve').text(data.reserve);
         $('#next_level_cost').text(data.next_level_cost);
         $('#next_level_energy').text(data.next_level_energy);
-
+        if (data.reserve > 0){
+            $('#reserve').text(`${data.reserve} xcoins`);
+        }
+        else{
+            $('#reserve').text('0, ожидайте новых пополнени');
+        }
         const progressBar = document.getElementById('level-bar');
         const percentage = (data.energy_amount / data.total_energy_amount) * 100;
         progressBar.style.width = `${percentage}%`;
@@ -247,6 +246,7 @@
     async function main(){
         initializeCountdown()
         getMe()
+        setInterval(getMe, 10000)
     }
 
     window.onload = main;
