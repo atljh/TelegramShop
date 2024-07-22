@@ -20,7 +20,8 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     q = '''
     SELECT 
         bot_user.telegram_link, 
-        bot_user.xcoins, 
+        bot_user.balance,
+        bot_user.xcoins,
         current_level.level AS energy_level, 
         current_level.energy_amount AS total_energy_amount, 
         bot_user.energy_amount,
@@ -46,7 +47,7 @@ async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
     if user_energy_level == 7:
         next_level_cost = None
     else:
-        next_level_cost = user.get('next_level_cost')/10000
+        next_level_cost = user.get('next_level_cost')
     user.update(
         {
             'reserve': reserve,
@@ -86,7 +87,7 @@ async def tap(telegram_id: int, conn: Connection) -> dict:
 @connection
 async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
     user = await get_bot_user(telegram_id)
-    user_xcoins = user.get('xcoins')
+    user_balance = user.get('balance')
     user_energy_level = int(user.get('energy_level'))
     if user_energy_level == 7:
         return await get_bot_user(telegram_id)
@@ -102,21 +103,23 @@ async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
     next_energy_level_obj = await conn.fetchrow(q, next_energy_level)
     level_id = next_energy_level_obj.get('id')
     level_cost = next_energy_level_obj.get('cost')
+    if user_balance < level_cost:
+        return await get_bot_user(telegram_id)
+        
     q = '''
     UPDATE
         bot_user
     SET
         energy_level_id = $2,
-        xcoins = xcoins - $3
+        balance = balance - $3
     WHERE
         telegram_id = $1 
     AND
-        xcoins - $3 >= 0
+        balance - $3 >= 0
     RETURNING 1
     '''
     res = bool(await conn.execute(q, telegram_id, level_id, level_cost))
     if res:
-        level_cost_in_dollar = level_cost / 10000 * 0.5
         q = '''
         UPDATE
             bot_pyramid_info
@@ -124,7 +127,7 @@ async def upgrade_energy_level(telegram_id: int, conn: Connection) -> dict:
             reserve = reserve + $1,
             total_plus = total_plus + $1
         '''
-        await conn.execute(q, level_cost_in_dollar)
+        await conn.execute(q, level_cost * 0.5)
     return await get_bot_user(telegram_id)
     
     
