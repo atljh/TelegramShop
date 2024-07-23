@@ -73,7 +73,7 @@ class User(models.Model):
                                      to=EnergyLevel, on_delete=models.SET(get_first_energy_level),
                                      default=get_first_energy_level_id
                                     )
-    energy_amount = models.IntegerField("Количество энергии", default=100)
+    energy_amount = models.FloatField("Количество энергии", default=100)
 
     # topping_uses_count = models.SmallIntegerField(default=0)
     # auto_topping_minutes = models.IntegerField(default=0)

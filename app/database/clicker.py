@@ -67,7 +67,7 @@ async def get_user_energy(telegram_id: int, conn: Connection) -> bool:
         bot_user.telegram_id = $1
     '''
     energy_amount = await conn.fetchval(q, telegram_id)
-    return energy_amount > 0
+    return energy_amount > 1
 
 @connection
 async def tap(telegram_id: int, conn: Connection) -> dict:
@@ -82,6 +82,14 @@ async def tap(telegram_id: int, conn: Connection) -> dict:
     WHERE telegram_id = $2;
     '''
     await conn.execute(q, xcoins_for_click, telegram_id)
+    
+    q = '''
+    UPDATE 
+        bot_pyramid_info
+    SET
+        total_plus = total_plus - 0.0001
+    '''
+    await conn.execute(q)
     return await get_bot_user(telegram_id)
 
 @connection
@@ -157,7 +165,8 @@ async def update_energy(conn: Connection):
             bot_user.energy_amount < $2;
         '''
         users = await conn.fetch(q, lvl.get('id'), lvl.get('energy_amount'))
-        energy_plus = int(lvl.get('energy_amount') * energy_recover_percent / 100)
+        energy_plus = float(lvl.get('energy_amount') * energy_recover_percent / 100)
+        energy_plus = round(energy_plus,2)
         for user in users:
             q = '''
             UPDATE

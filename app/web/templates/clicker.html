@@ -204,7 +204,7 @@
     function draw(data){
         $('#balance').text(data.xcoins);
         $('#energy_level').text(data.energy_level);
-        $('#energy_amount').text(data.energy_amount);
+        $('#energy_amount').text(data.energy_amount.toFixed(2));
         $('#total_energy_amount').text(data.total_energy_amount);
         if (data.next_level_cost === null || data.next_level_cost === undefined) {
             $('#next_level_cost').text('');
