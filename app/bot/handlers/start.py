@@ -21,7 +21,7 @@ async def start_menu(user_id):
         buttons.insert(1, {'text': await var.get_text('get_chat_link_button'), 'data': 'get_chat_link'},)
 
     if (await pyramid.pyramid_available()):
-        buttons.insert(3, {'text': await var.get_text('investitions_button'), 'data': 'pyramid_info'})
+        buttons.insert(1, {'text': await var.get_text('investitions_button'), 'data': 'pyramid_info'})
 
     if (await system.register_storage_available()):
         buttons.insert(0, {'text': await var.get_text('register_for_storage'), 'data': 'register_for_storage'})

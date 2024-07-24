@@ -14,8 +14,7 @@ async def profile_menu(name, user_id):
     text = text.format(
         name=name,
         balance=round(float(balance.get('balance')),4),
-        # coin_balance=int(balance.get('coin_balance')*100)/100,
-        # pyramid_balance=int(balance.get('pyramid_balance')*100)/100,
+        xcoins=round(float(balance.get('xcoins')),4),
     )
     
     img = await var.get_var("profile_image", str)
