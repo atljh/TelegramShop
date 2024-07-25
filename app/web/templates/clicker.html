@@ -16,18 +16,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #2b2f38;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            color: #000;
-            height: 100%;
+ display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('https://grayscheme.com/header-bg2.jpg');
+    background-size: cover;
+    background-position: center;
+    font-family: Arial, sans-serif;
         }
+                html, body {
+  overflow: hidden;
+}
         .container {
             padding: 20px;
         }
@@ -39,52 +44,71 @@
         }
         .level-bar-container {
             position: relative;
-            width: 200px;
+            width: 100%;
             height: 30px;
-            border: 2px solid #000;
-            margin: 20px auto;
+            color: white;
+            font-family: "Advent Pro", sans-serif;
+            border-radius: 4px;
+            border: 2px solid linear-gradient(90deg, rgba(0,226,255,1) 0%, rgba(25,119,252,1) 100%);;
+            margin: 20px auto 30px;
+            box-shadow: 0px 0px 100px #3898ec;
+            text-shadow: 0px 0px 2px white;
         }
         .level-bar {
             height: 100%;
-            width: 84%;
-            background-color: #00FF00;
+            width: 100%;
             position: absolute;
+            background: linear-gradient(90deg, rgba(0,226,255,1) 0%, rgba(25,119,252,1) 100%);
+
         }
         .level-text {
             position: absolute;
             width: 100%;
             text-align: center;
             line-height: 30px;
+
         }
         .coin-button {
             background-image: url('https://grayscheme.com/uploads/tether-4.webp');
             background-size: cover;
-            background-color: #2b2f38;
+            background-color: transparent;
             width: 175px;
             height: 175px;
             margin: 20px auto;
             border: none;
             display: flex;
-
             align-items: center;
             justify-content: center;
-        }
-        .coin-button:hover {
-            
+
         }
         .upgrade-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #00FF00;
-            border: 2px solid #000;
-            margin-top: 20px;
-            text-decoration: none;
-            cursor: pointer;
-            color: #000;
-            font-size: 16px;
+           display: inline-block;
+    padding: 10px 20px;
+    background-color:  #ffc107;
+    border: none;
+    width: 100%;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #fff;
+    text-shadow: 1px 1px 5px #ff9400;
+    font-size: 16px;
+    box-shadow: 0px 0px 80px #ffc30069;
+        }
+        .upgrade-button:hover {
+    box-shadow: 0px 0px 100px #ffc300b0;
+    background-color: #f4c536;
+    transition: 0.3s;
+        }
+        .upgrade-button:active {
+    box-shadow: 0px 0px 100px #ffc300b0;
+    background-color: #f4c536;
+    transition: 0.3s;
         }
         .timer {
               font-family: "Advent Pro", sans-serif;
+              color: white;
+              text-shadow: 0px 0px 2px white;
         }
         #energy_level {
               font-family: "Advent Pro", sans-serif;
@@ -95,20 +119,116 @@
         #balance {
             font-family: "Advent Pro", sans-serif;
         }
+.centered-glass-block {
+    position: relative;
+    padding: 50px;
+    max-width: 90%;
+    text-align: center;
+    margin: 20px;
+        min-width: 218px;
+}
+
+.centered-glass-block::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: -1;
+}
+.vnutryanka {
+    position: relative;
+    z-index: 2;
+}
+h1 {
+    font-family: "Advent Pro", sans-serif;
+    font-weight: 600px;
+    color: white;
+    font-size: 40px;}
+.glaim {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 538px;
+    height: 537px;
+    background: #451ac1d9;
+    opacity: .2;
+    filter: blur(192.006px);
+    border-radius: 50%;
+    transform: translate(-36%, -20%);
+    z-index: 2;
+}
+#click {
+            width: 175px;
+            height: 175px;
+            color: white;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+}
+.plus-one {
+            position: absolute;
+            font-size: 25px;
+            font-family: "Space Grotesk", sans-serif;
+            color: white;
+            font-weight: 600;
+            animation: fade 1s forwards;
+        }
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 0.2s ease-in-out;    
+}
     </style>
 </head>
 <body>
-    <div class="container">
-            <div class="reserve">
-                Резерв: <span id="reserve"></span>
-            </div>
-        <div class="balance">Баланс:
-             <code id="balance">
-             </code>
-             xcoins
-        </div>
+    <div class="glaim"></div>
+    <div class="container centered-glass-block">
+        <div class="vnutryanka">
+      <table style="width: 100%; margin: 0 auto; color: white; font-family: 'Advent Pro', sans-serif;     border: 1px solid #c2c2c24d;
+    box-shadow: 0px 0px 10px #ffffff0f; border-radius: 4PX; text-shadow: 0px 0px 2px white;" border="1">
+        <tr>
+            <td>Резерв</td>
+            <td><span id="reserve"></span></td>
+        </tr>
+        <tr>
+            <td>Баланс</td>
+            <td><code id="balance"></code> xcoins</td>
+        </tr>
+        <tr>
+            <td>Уровень</td>
+            <td><span id="energy_level"></span></td>
+        </tr>
+    </table>
+            
         <pre><code id="div-code-output"></code></pre>
-        <span class="energy_level">Уровень энергии: <span id="energy_level"></span></span>
         <div class="level-bar-container">
             <div class="level-bar" id="level-bar"></div>
             <div class="level-text">
@@ -116,11 +236,12 @@
             </div>
         </div>
         
-        <button class="coin-button" type="button" onclick="tap();"></button>
+        <button class="coin-button" id="click" type="button" onclick="tap();"></button>
         
-        <button class="upgrade-button" type="button" onclick="upgradeEnergyLevel();">Прокачать Уровень <span id="next_level_cost"></span>$<br>+<span id="next_level_energy"></span> ЭНЕРГИИ</button>
+        <button class="upgrade-button" type="button" onclick="upgradeEnergyLevel();"><span id="next_level_cost"></span>$ =<span id="next_level_energy"></span> Энергии</button>
 
         <div class="timer">xDrop: <span id="time_until_bonuses"></span></div>
+    </div>
     </div>
 </body>
 <script>
@@ -209,11 +330,11 @@
         if (data.next_level_cost === null || data.next_level_cost === undefined) {
             $('#next_level_cost').text('');
             $('#next_level_energy').text('');
-            $('.upgrade-button').html('ПРОКАЧАТЬ УРОВЕНЬ'); // Default text when cost is null
+            $('.upgrade-button').html('Максимальный уровень'); // Default text when cost is null
         } else {
             $('#next_level_cost').text(data.next_level_cost);
             $('#next_level_energy').text(data.next_level_energy);
-            $('.upgrade-button').html('ПРОКАЧАТЬ УРОВЕНЬ <span id="next_level_cost">' + data.next_level_cost + '</span>$<br>+<span id="next_level_energy">' + data.next_level_energy + '</span> ЭНЕРГИИ');
+            $('.upgrade-button').html('<span id="next_level_cost">' + data.next_level_cost + '</span>$ = <span id="next_level_energy">' + data.next_level_energy + '</span> Энергии');
         }
         
         if (data.reserve > 0){
@@ -274,4 +395,43 @@
     window.onload = main;
 
 </script>
+  <script>
+    document.getElementById('click').addEventListener('click', function() {
+      // Проверка, поддерживает ли устройство вибрацию
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Вибрация на 50 миллисекунд
+      } else {
+        console.log("Vibration API не поддерживается этим устройством.");
+      }
+    });
+  </script>
+      <script>
+        document.getElementById('click').addEventListener('click', function(event) {
+            var button = this;
+            var rect = button.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+
+            var plusOne = document.createElement('div');
+            plusOne.textContent = '+1';
+            plusOne.className = 'plus-one';
+            plusOne.style.left = x + 'px';
+            plusOne.style.top = y + 'px';
+
+            button.appendChild(plusOne);
+
+            setTimeout(function() {
+                plusOne.remove();
+            }, 1000);
+        });
+    </script>
+  <script>
+    document.getElementById('click').addEventListener('click', function() {
+      const element = this;
+      element.classList.add('pulse');
+      element.addEventListener('animationend', function() {
+        element.classList.remove('pulse');
+      }, { once: true });
+    });
+  </script>
 </html>
