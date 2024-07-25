@@ -23,7 +23,7 @@ def schedule_jobs():
     scheduler.add_job(user.update_currency_exchange, 'cron', hour=23, minute=59, second=59)
     scheduler.add_job(pyramid.update_system_fee, 'interval', minutes=10)
     
-    scheduler.add_job(utils.check_cryptobot, 'interval', minutes=5)
+    scheduler.add_job(utils.check_cryptobot, 'interval', minutes=1)
     scheduler.add_job(payment.delete_cryptobot, 'cron', day=1, hour=23, minute=59, second=59)
     
     return update_bonuses_job

@@ -6,6 +6,7 @@ import asyncio
 from aiocryptopay import AioCryptoPay, Networks
 from aiocryptopay.models.update import Update
 
+from app.web.loader import app
 from app.database import payment, user, var
 
 
@@ -23,6 +24,13 @@ crypto = AioCryptoPay(token=f"{crypto_secret}", network=Networks.MAIN_NET)
 #     global crypto 
 #     crypto = AioCryptoPay(token=f"{await var.get_text('cryptobot_secret')}", network=Networks.MAIN_NET)
 #     return crypto
+
+async def close_session(app) -> None:
+    await crypto.close()
+
+@crypto.pay_handler()
+async def invoice_paid(update: Update, app) -> None:
+    print('cr', update)
 
 async def check_cryptobot():
     invoices = await payment.check_cryptobot()
@@ -88,4 +96,4 @@ def get_access_key(url: str, id: str) -> tuple:
     
     return False, None
 
-# app.on_shutdown.append(close_session)
+app.on_shutdown.append(close_session)
