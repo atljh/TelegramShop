@@ -50,8 +50,8 @@ async def calculate_bonus(deposit):
 
 @connection
 async def update_total_plus(amount: float, conn: Connection):
-    q = '''UPDATE bot_pyramid_info SET total_plus = total_plus + $1 WHERE id = $2'''
-    await conn.execute(q, amount, 1)
+    q = '''UPDATE bot_pyramid_info SET total_plus = total_plus + $1'''
+    await conn.execute(q, amount)
 
 
 @connection
@@ -148,7 +148,7 @@ async def evaluate(amount: float, from_index: int, conn: Connection = None):
             user['balance'] += to_add
             user['is_done'] = True
             user['amount'] = to_add
-            await update_total_plus(await calculate_bonus(user['initial_deposit']))
+            # await update_total_plus(await calculate_bonus(user['initial_deposit']))
             unused += summ - to_add
             new_queue.append(user)
 
@@ -234,8 +234,9 @@ async def pyramid_info(conn: Connection):
     investors_count = await conn.fetchval(q)
     q = '''SELECT SUM(initial_deposit) FROM bot_pyramid_queue WHERE not is_done'''
     balance = await conn.fetchval(q)
-    q = '''SELECT total_plus from bot_pyramid_info WHERE id = $1'''
-    total_plus = round(await conn.fetchval(q, 1), 2)
+    q = '''SELECT total_plus from bot_pyramid_info'''
+    res = await conn.fetchval(q)
+    total_plus = round(res, 2) if res else 0
 
     return {
         'investors_count': investors_count or 0,
@@ -355,7 +356,6 @@ async def get_pyramid_queue(conn: Connection) -> List[dict]:
 @connection
 async def update_reserve_and_balance(conn: Connection):
     reserve = (await get_reserve()).get('reserve')
-    print('ff')
     if not reserve:
         return
     
@@ -384,7 +384,7 @@ async def update_reserve_and_balance(conn: Connection):
             user['balance'] += balance_difference
             user['is_done'] = True
             user['amount'] = balance_difference
-            await update_total_plus(await calculate_bonus(user['initial_deposit']))
+            # await update_total_plus(await calculate_bonus(user['initial_deposit']))
             print(new_reserve, amount_per_user - balance_difference)
             new_reserve += amount_per_user - balance_difference
         users_to_update.append(user)
@@ -450,11 +450,11 @@ async def to_bonuses(telegram_id: int, amount: int, conn: Connection):
 @connection
 async def from_deposit_to_ref(amount: float, first_ref, second_ref, conn: Connection):
 
-
     if second_ref:
         sec_ref_id = second_ref.get('id')
         first_ref_id = first_ref.get('id')
         if not first_ref_id:
+            await update_total_plus(amount * 0.05)
             return
         if sec_ref_id:
             q = ''' UPDATE bot_user
@@ -471,6 +471,7 @@ async def from_deposit_to_ref(amount: float, first_ref, second_ref, conn: Connec
                         balance_from_referral_today = balance_from_referral_today + $1
                     WHERE id = $2'''
             await conn.execute(q, amount * 0.03, first_ref_id)
+        await update_total_plus(amount * 0.01)
         return
 
     elif first_ref:
@@ -482,9 +483,10 @@ async def from_deposit_to_ref(amount: float, first_ref, second_ref, conn: Connec
                         balance_from_referral_today = balance_from_referral_today + $1
                     WHERE id = $2'''
             await conn.execute(q, amount * 0.03, ref_id)
+            await update_total_plus(amount * 0.02)
         else:
             print('no ref_id')
-
+    
 
 
 @connection
@@ -588,6 +590,11 @@ async def stop_autotopping(telegram_id: int, conn: Connection):
 async def update_system_fee(conn: Connection):
     q = ''' SELECT SUM(initial_deposit * 0.05)
             FROM bot_pyramid_queue
+        '''
+    total_plus = await conn.fetchval(q)
+
+    q = ''' SELECT SUM(initial_deposit * 0.05)
+            FROM bot_pyramid_queue
             WHERE time >= date_trunc('month', CURRENT_DATE)::timestamp
             AND time < date_trunc('month', CURRENT_DATE + INTERVAL '1 MONTH')::timestamp'''
     pyramid_last_month = await conn.fetchval(q)
@@ -602,8 +609,8 @@ async def update_system_fee(conn: Connection):
             WHERE time::date = CURRENT_DATE'''
     pyramid_today = await conn.fetchval(q)
 
-    q = '''UPDATE bot_pyramid_info SET pyramid_last_month = $1, pyramid_yesterday = $2, pyramid_today = $3 WHERE id = $4'''
-    await conn.execute(q, pyramid_last_month, pyramid_yesterday, pyramid_today, 1)
+    q = '''UPDATE bot_pyramid_info SET pyramid_last_month = $1, pyramid_yesterday = $2, pyramid_today = $3'''
+    await conn.execute(q, pyramid_last_month, pyramid_yesterday, pyramid_today)
 
 
 @connection

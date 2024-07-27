@@ -37,6 +37,7 @@ async def check_cryptobot():
     for invoice in invoices:
         inv = await crypto.get_invoices(invoice_ids=invoice.get('invoice_id'))
         if inv.status == 'paid':
+            print(inv)
             await payment.add(int(inv.payload))
             await user.refill(int(inv.payload), inv.amount)
             try:

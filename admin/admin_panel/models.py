@@ -18,7 +18,7 @@ class Mark(models.Model):
 
 class EnergyLevel(models.Model):
     level = models.IntegerField("Уровень", default=1, unique=True)
-    cost = models.IntegerField("Стоимость в xcoins", default=0)
+    cost = models.IntegerField("Стоимость", default=0)
     energy_amount = models.IntegerField("Количество энергии", default=0)
 
     def __str__(self):

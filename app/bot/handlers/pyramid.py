@@ -108,7 +108,7 @@ async def pyramid_info_handler(callback: CallbackQuery, state: FSMContext):
         image = await var.get_var("input_invest_amount_image", str)
         reply_markup = InlineKeyboard(
             {'text': 'xTether', 'data': 'invest'},
-            {'text': 'xcoins', 'data': 'invest_coins'},
+            {'text': 'xCoins', 'data': 'invest_coins'},
 
             {'text': await var.get_text('back_button'), 'data': 'pyramid_info'}
         )

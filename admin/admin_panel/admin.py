@@ -201,8 +201,8 @@ def distribute_reserve():
 
 
 class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('reserve', 'total_plus', 'pyramid_last_month', 'pyramid_yesterday', 'pyramid_today',
-     'knb_last_month', 'knb_yesterday', 'knb_today', )
+    list_display = ('reserve', 'total_plus', 'pyramid_last_month', 'pyramid_yesterday', 'pyramid_today', 'knb_last_month', 'knb_yesterday', 'knb_today', )
+
 
     @action(label="Распределить резерв", description="Распределить резерв")
     def reserve(self, request, obj):
