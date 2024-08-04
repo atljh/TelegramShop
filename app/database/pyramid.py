@@ -31,13 +31,15 @@ async def add(telegram_id: int, amount: int, conn: Connection = None):
 
 
 async def calculate_bonus(deposit):
-    if 10 <= deposit < 50:
+    if 1 <= deposit <= 9:
         bonus = 0.10 * deposit
-    elif 50 <= deposit < 100:
+    elif 10 <= deposit <= 49:
+        bonus = 0.10 * deposit
+    elif 50 <= deposit <= 99:
         bonus = 0.15 * deposit
-    elif 100 <= deposit < 250:
+    elif 100 <= deposit <= 249:
         bonus = 0.20 * deposit
-    elif 250 <= deposit < 500:
+    elif 250 <= deposit <= 499:
         bonus = 0.25 * deposit
     elif deposit >= 500:
         bonus = 0.30 * deposit
