@@ -125,7 +125,7 @@ class PromocodeAdmin(admin.ModelAdmin):
 
 
 class PaymentGatewayAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'percent', 'is_showed')
+    list_display = ('id', 'title', 'commission_amount', 'is_showed')
 
 
 class WithdrawGatewayAdmin(admin.ModelAdmin):

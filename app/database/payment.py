@@ -74,5 +74,18 @@ async def update_cryptobot(invoice_id: int, conn: Connection):
 
 @connection
 async def delete_cryptobot(conn: Connection):
-    q = 'DELETE FROM bot_cryptobot_payment WHERE CAST(time AS DATE) < CURRENT_DATE'''
+    q = '''DELETE FROM bot_cryptobot_payment WHERE CAST(time AS DATE) < CURRENT_DATE'''
     await conn.execute(q)
+
+
+@connection
+async def get_payment_gateway_commission(gateway_id: str, conn: Connection):
+    q = '''
+    SELECT
+        commission_amount
+    FROM
+        bot_payment_gateway 
+    WHERE id = $1
+    '''
+    commission_amount = await conn.fetchval(q, gateway_id)
+    return commission_amount if commission_amount else 0

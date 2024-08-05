@@ -236,7 +236,7 @@ class Payment(models.Model):
 class PaymentGateway(models.Model):
     id = models.CharField(max_length=256, primary_key=True)
     title = models.CharField(max_length=256)
-    percent = models.FloatField(default=10)
+    commission_amount = models.FloatField(default=10)
     is_showed = models.BooleanField()
 
     def __str__(self):
