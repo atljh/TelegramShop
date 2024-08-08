@@ -6,5 +6,6 @@ from .inviter import user_has_access_channel
 
 from .clicker import (
     clicker_main, web_check_user_data,
-    get_next_run_time, get_me, tap, upgrade_energy_level
+    get_next_run_time, get_me, tap, upgrade_energy_level,
+    xday
     )

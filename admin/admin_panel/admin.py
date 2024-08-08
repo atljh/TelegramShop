@@ -196,19 +196,30 @@ class ExchangeHistoryAdmin(admin.ModelAdmin):
 admin.site.register(ExchangeHistory, ExchangeHistoryAdmin)
 
 
+
+
 def distribute_reserve():
     get(f'http://{os.getenv("web_host", "localhost")}:{os.getenv("web_port", 7000)}/distribute_reserve')
+
+def xday(id):
+    get(f'http://{os.getenv("web_hot", "localhost")}:{os.getenv("web_port", 7000)}/xday')
 
 
 class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('reserve', 'total_plus', 'pyramid_last_month', 'pyramid_yesterday', 'pyramid_today', 'knb_last_month', 'knb_yesterday', 'knb_today', )
 
 
+    @action(label='XDay', description='XDay')
+    def xday(self, request, obj):
+        print(request.user.email)
+        Thread(target=xday, args=[obj.pk]).start()
+        
+
     @action(label="Распределить резерв", description="Распределить резерв")
     def reserve(self, request, obj):
         distribute_reserve()
 
-    change_actions = ('reserve', )
+    change_actions = ('reserve', 'xday', )
 
 admin.site.register(PyramidInfo, PyramidInfoAdmin)
 

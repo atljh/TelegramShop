@@ -49,3 +49,8 @@ async def upgrade_energy_level(request: Request):
     telegram_id = data['user']['id']
     user = await clicker.upgrade_energy_level(telegram_id)
     return json_response({"ok": True, "user": json.dumps(user)})
+
+
+async def xday(request: Request):
+    print(request)
+    return json_response({"status": True})
