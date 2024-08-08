@@ -1,21 +1,23 @@
 import os
-
-from django.contrib import admin
-from .models import *
-from django.db.models import Q
-from django.utils.safestring import mark_safe
-from django.contrib.admin import SimpleListFilter
-from django.db.models.query import QuerySet
-from threading import Thread
 from time import sleep
+from hashlib import md5
+from threading import Thread
 from requests import post, get
-from django.utils.html import format_html
+
 from aiohttp import web
 
+from django.db.models import Q
+from django.contrib import admin
+from django.utils.html import format_html
+from django.db.models.query import QuerySet
+from django.utils.safestring import mark_safe
+from django.contrib.admin import SimpleListFilter
 from django_object_actions import DjangoObjectActions, action
 
+from .models import *
+
 class AccountTypeFilter(SimpleListFilter):
-    title = 'AccountType' # or use _('country') for translated title
+    title = 'AccountType' 
     parameter_name = 'account_type'
 
     def lookups(self, request, model_admin):
@@ -201,8 +203,8 @@ admin.site.register(ExchangeHistory, ExchangeHistoryAdmin)
 def distribute_reserve():
     get(f'http://{os.getenv("web_host", "localhost")}:{os.getenv("web_port", 7000)}/distribute_reserve')
 
-def xday(id):
-    get(f'http://{os.getenv("web_hot", "localhost")}:{os.getenv("web_port", 7000)}/xday')
+def xday(sign, admin_id):
+    post(f'http://{os.getenv("web_hot", "localhost")}:{os.getenv("web_port", 7000)}/xday', json={'sign': sign, 'admin_id': admin_id})
 
 
 class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
@@ -211,8 +213,8 @@ class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     @action(label='XDay', description='XDay')
     def xday(self, request, obj):
-        print(request.user.email)
-        Thread(target=xday, args=[obj.pk]).start()
+        sign = md5(f"{request.user.email}:{request.user.username}:{request.user.id}".encode()).hexdigest()
+        Thread(target=xday, args=[sign, request.user.id]).start()
         
 
     @action(label="Распределить резерв", description="Распределить резерв")
