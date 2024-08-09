@@ -199,11 +199,32 @@ async def xday(conn: Connection):
     '''
     await conn.execute(q) 
     
+        
+    q = '''
+    UPDATE bot_pyramid_info
+    SET 
+        reserve = reserve + (
+            SELECT SUM(balance * 0.05)
+            FROM bot_pyramid_queue
+            WHERE is_done = FALSE
+        ),
+        total_plus = total_plus + (
+            SELECT SUM(balance * 0.05)
+            FROM bot_pyramid_queue
+            WHERE is_done = FALSE
+        )
+    WHERE id = 1
+    '''
+    await conn.execute(q)
+    
     q = '''
     UPDATE
         bot_pyramid_queue
     SET 
         initial_deposit = initial_deposit * 0.9,
+        balance = balance * 0.9,
         max_balance = max_balance * 0.9
+    WHERE is_done = False
     '''
+
     await conn.execute(q)

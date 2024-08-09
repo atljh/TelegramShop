@@ -217,29 +217,13 @@ class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
         sign = md5(f"{request.user.email}:{request.user.username}:{request.user.id}".encode()).hexdigest()
         Thread(target=xday, args=[sign, request.user.id]).start()
         self.message_user(request, "XDay action was successfully executed.")
-        #     return None
-
-        # return HttpResponse(
-        #     """
-        #     <html>
-        #     <body>
-        #         <h2>Are you sure you want to perform XDay action?</h2>
-        #         <form method="post">
-        #             <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
-        #             <input type="submit" name="apply" value="Yes">
-        #             <input type="submit" name="cancel" value="No">
-        #         </form>
-        #     </body>
-        #     </html>
-        #     """.format(csrf_token=request.COOKIES['csrftoken'])
-        # )
 
 
     @action(label="Распределить резерв", description="Распределить резерв")
     def reserve(self, request, obj):
         distribute_reserve()
 
-    change_actions = ('reserve', 'xday', )    
+    change_actions = ('reserve', 'xday', 'zeroing')    
     
     class Media:
         js = ('admin/js/xday_confirm.js',)  # Путь к вашему JavaScript файлу
