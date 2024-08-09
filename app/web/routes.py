@@ -15,6 +15,7 @@ app.router.add_post ('/cryptocloud_payment_callback3Rs4F8JWskMrLp2AxA2UY8Us', ha
 app.router.add_post('/generate_knb', handlers.generate_knb)
 app.router.add_get('/distribute_reserve', handlers.distribute_reserve)
 app.router.add_post('/xday', handlers.xday)
+app.router.add_post('/zeroing', handlers.zeroing)
 app.router.add_get('/user_has_access_channel', handlers.user_has_access_channel)
 
 app.router.add_post('/payok_payment_callback', handlers.payok_payment_callback)

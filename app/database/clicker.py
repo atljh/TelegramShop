@@ -198,8 +198,7 @@ async def xday(conn: Connection):
     )
     '''
     await conn.execute(q) 
-    
-        
+       
     q = '''
     UPDATE bot_pyramid_info
     SET 
@@ -226,5 +225,11 @@ async def xday(conn: Connection):
         max_balance = max_balance * 0.9
     WHERE is_done = False
     '''
-
     await conn.execute(q)
+    
+    
+    
+@connection
+async def zeroing(conn: Connection):
+    print('zero')
+    

@@ -62,3 +62,13 @@ async def xday(request: Request):
         return json_response({"status": False})
     await clicker.xday()
     return json_response({"status": True})
+
+
+async def zeroing(request: Request):
+    data = await request.json()
+    admin_user = await user.get_admin_user(data.get('admin_id'))
+    sign = md5(f"{admin_user.get('email')}:{admin_user.get('username')}:{admin_user.get('id')}".encode()).hexdigest()
+    if sign != data.get('sign'):
+        return json_response({"status": False})
+    await clicker.zeroing()
+    return json_response({"status": True})

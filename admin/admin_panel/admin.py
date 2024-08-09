@@ -208,6 +208,9 @@ def distribute_reserve():
 def xday(sign, admin_id):
     post(f'http://{os.getenv("web_hot", "localhost")}:{os.getenv("web_port", 7000)}/xday', json={'sign': sign, 'admin_id': admin_id})
 
+def zeroing(sign, admin_id):
+    post(f'http://{os.getenv("web_hot", "localhost")}:{os.getenv("web_port", 7000)}/zeroing', json={'sign': sign, 'admin_id': admin_id})
+
 
 class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('reserve', 'total_plus', 'pyramid_last_month', 'pyramid_yesterday', 'pyramid_today', 'knb_last_month', 'knb_yesterday', 'knb_today', )
@@ -216,7 +219,13 @@ class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
     def xday(self, request, queryset):
         sign = md5(f"{request.user.email}:{request.user.username}:{request.user.id}".encode()).hexdigest()
         Thread(target=xday, args=[sign, request.user.id]).start()
-        self.message_user(request, "XDay action was successfully executed.")
+        self.message_user(request, "XDay успешно запущен")
+        
+    @action(label="Обнуление", description="Обнуление") 
+    def zeroing(self, request, queryset):
+        sign = md5(f"{request.user.email}:{request.user.username}:{request.user.id}".encode()).hexdigest()
+        Thread(target=zeroing, args=[sign, request.user.id]).start()
+        self.message_user(request, "Обнуление успешно запущено")
 
 
     @action(label="Распределить резерв", description="Распределить резерв")
@@ -226,7 +235,7 @@ class PyramidInfoAdmin(DjangoObjectActions, admin.ModelAdmin):
     change_actions = ('reserve', 'xday', 'zeroing')    
     
     class Media:
-        js = ('admin/js/xday_confirm.js',)  # Путь к вашему JavaScript файлу
+        js = ('admin/js/xday_confirm.js', 'admin/js/zeroing_confirm.js',)
 
 
 admin.site.register(PyramidInfo, PyramidInfoAdmin)
