@@ -231,5 +231,25 @@ async def xday(conn: Connection):
     
 @connection
 async def zeroing(conn: Connection):
-    print('zero')
-    
+    q = '''BEGIN;
+
+    DELETE FROM bot_pyramid_queue
+    WHERE is_done = FALSE;
+
+    WITH first_level AS (
+        SELECT id
+        FROM admin_panel_energylevel
+        WHERE level = 1
+        LIMIT 1
+    )
+    UPDATE bot_user
+    SET energy_level_id = (SELECT id FROM first_level);
+
+    UPDATE bot_user
+    SET xcoins = 0;
+
+    COMMIT;
+    '''
+    await conn.execute(q)
+
+        
