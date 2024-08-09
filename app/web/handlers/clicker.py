@@ -60,5 +60,5 @@ async def xday(request: Request):
     sign = md5(f"{admin_user.get('email')}:{admin_user.get('username')}:{admin_user.get('id')}".encode()).hexdigest()
     if sign != data.get('sign'):
         return json_response({"status": False})
-    
+    await clicker.xday()
     return json_response({"status": True})

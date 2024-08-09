@@ -888,6 +888,7 @@ async def deposit_with_xcoins(telegram_id: int, amount: int, conn: Connection):
     res = bool(await conn.fetchval(q, telegram_id, amount))
     return res
 
+
 @connection
 async def get_admin_user(admin_id: int, conn: Connection):
     q = '''SELECT * FROM auth_user WHERE id = $1'''

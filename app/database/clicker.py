@@ -180,3 +180,30 @@ async def update_energy(conn: Connection):
                 telegram_id = $1   
             '''
             await conn.execute(q, user.get('telegram_id'), energy_plus, lvl.get('energy_amount'))
+    
+    
+@connection
+async def xday(conn: Connection):
+    q = '''
+    UPDATE bot_user AS u
+    SET energy_level_id = (
+        SELECT id
+        FROM admin_panel_energylevel AS e
+        WHERE e.level = (SELECT level - 1 FROM admin_panel_energylevel WHERE id = u.energy_level_id)
+    )
+    WHERE EXISTS (
+        SELECT 1
+        FROM admin_panel_energylevel AS e
+        WHERE e.level = (SELECT level - 1 FROM admin_panel_energylevel WHERE id = u.energy_level_id)
+    )
+    '''
+    await conn.execute(q) 
+    
+    q = '''
+    UPDATE
+        bot_pyramid_queue
+    SET 
+        initial_deposit = initial_deposit * 0.9,
+        max_balance = max_balance * 0.9
+    '''
+    await conn.execute(q)
