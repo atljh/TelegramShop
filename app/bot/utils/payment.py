@@ -149,7 +149,8 @@ async def generate_cryptobot_link(user_id: int, price: float, discount: int = 0)
     price -= price * discount / 100
     price = round(price, 2)
     commission_amount = await payment.get_payment_gateway_commission('cryptobot')
-    price = price + commission_amount
+    commission = price / 100 * commission_amount
+    price = price + commission
     invoice = await crypto.create_invoice(asset='USDT', amount=price, payload=str(user_id))
     await payment.add_cryptobot(invoice.invoice_id, user_id, price)
     return invoice.bot_invoice_url, price

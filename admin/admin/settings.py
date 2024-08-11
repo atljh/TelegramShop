@@ -30,7 +30,7 @@ SECRET_KEY = f'{os.environ.get("SECRET_KEY")}'
 DEBUG = os.environ.get('DEBUG', 'False')
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', f'https://*.{os.environ.get("DOMAIN")}']
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', f'https://*.{os.environ.get("DOMAIN")}', 'http://xtether.top']
 
 # Application definition
 INSTALLED_APPS = [
@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'admin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
+        'NAME': os.environ.get('POSTGRES_NAME', 'celmond'),
+        'USER': os.environ.get('POSTGRES_USER', 'celmond'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGERS_PORT', '5432'),

@@ -21,11 +21,11 @@ class Database(object):
         self.__pool = await asyncpg.create_pool(
             min_size=1,
             max_size=3,
-            host=os.getenv('postgres_host'),
-            port=os.getenv('postgres_port'),
-            database=os.getenv('postgres_name'),
-            user=os.getenv('postgres_user'),
-            password=os.getenv('postgres_password')
+            host=os.getenv('POSTGRES_HOST'),
+            port=os.getenv('POSTGRES_PORT'),
+            database=os.getenv('POSTGRES_NAME'),
+            user=os.getenv('POSTGRES_USER'),
+            password=os.getenv('POSTGRES_PASSWORD')
         )
         return self.__pool
 

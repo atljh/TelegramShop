@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
-bot = Bot(token=os.getenv('bot_token'), parse_mode='html')
-storage = RedisStorage2(host=os.getenv('redis_host'), port=int(os.getenv('redis_port')), db=int(os.getenv('redis_db')))
+bot = Bot(token=os.getenv('BOT_TOKEN'), parse_mode='html')
+storage = RedisStorage2(host=os.getenv('REDIS_HOST'), port=int(os.getenv('REDIS_PORT')), db=int(os.getenv('REDIS_DB')))
 dp = Dispatcher(bot=bot, storage=storage)
 scheduler = AsyncIOScheduler()
