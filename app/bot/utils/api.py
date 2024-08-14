@@ -35,13 +35,19 @@ async def invoice_paid(update: Update, app) -> None:
 async def check_cryptobot():
     invoices = await payment.check_cryptobot()
     for invoice in invoices:
-        inv = await crypto.get_invoices(invoice_ids=invoice.get('invoice_id'))
+        try:
+            inv = await crypto.get_invoices(invoice_ids=invoice.get('invoice_id'))
+        except Exception:
+            print('Cryptobot exception', e)
         if inv.status == 'paid':
             print(inv)
+            commission_amount = await payment.get_payment_gateway_commission('cryptobot')
+            commission = inv.amount / 100 * commission_amount
+            amount = int(inv.amount - commission)
             await payment.add(int(inv.payload))
-            await user.refill(int(inv.payload), inv.amount)
+            await user.refill(int(inv.payload), amount)
             try:
-                await user.create_deposit(int(inv.payload), inv.amount, 'cryptobot')
+                await user.create_deposit(int(inv.payload), amount, 'cryptobot')
             except Exception as e:
                 print(f'exc {e}')
             await payment.update_cryptobot(invoice.get('invoice_id'))
