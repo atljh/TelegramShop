@@ -229,6 +229,9 @@ class Payment(models.Model):
     checked = models.BooleanField()
     created_at = models.DateTimeField()
 
+    def __str__(self):
+        return f'{self.telegram_id} | {self.checked}'
+
     class Meta:
         db_table = 'bot_payment'
 

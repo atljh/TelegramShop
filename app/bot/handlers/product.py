@@ -188,9 +188,8 @@ async def handle_product(callback: CallbackQuery, state: FSMContext):
 
 async def check_payment(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    st = await payment.check_payment(callback.from_user.id, data.get('qiwi_id'), data.get('price'))
+    st = await payment.check_payment(callback.from_user.id, data.get('price'))
     if st:
-        await state.update_data({'qiwi_id': None})
         callback.data = 'get'
         try:
             await callback.message.delete()

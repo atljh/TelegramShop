@@ -13,7 +13,7 @@ async def add(user_id: int, conn: Connection = None):
 async def check(user_id, conn: Connection = None):
     q = '''UPDATE bot_payment
            SET checked = TRUE
-           WHERE NOT checked AND     = $1
+           WHERE NOT checked AND telegram_id = $1
            RETURNING telegram_id'''
     return bool(await conn.fetchval(q, user_id))
 
@@ -29,7 +29,7 @@ async def get_gateways(conn: Connection):
 async def check_last(user_id, conn: Connection = None):
 	q = '''SELECT *
 		   FROM bot_payment
-		   WHERE telegram_id = $1 AND NOW() - created_at < INTERVAL '10 min' '''
+		   WHERE telegram_id = $1 AND NOW() - created_at < INTERVAL '10 min' AND checked = False'''
 	return bool(await conn.fetchval(q, user_id))
 
 

@@ -197,11 +197,9 @@ async def refill_handler(callback: CallbackQuery, state: FSMContext):
     
     if callback.data == 'check_payment':
         data = await state.get_data()
-        if await payment.check_payment(callback.from_user.id, data.get('qiwi_id')):
-            await state.update_data({'qiwi_id': None})
+        if await payment.check_payment(callback.from_user.id):
             callback.data = 'profile'
             await refill_handler(callback, state)
-            
         else:
             await callback.answer(await var.get_text('unsuccessful_payment_alert'), show_alert=True)
         return
@@ -280,8 +278,7 @@ async def refill_pyramid_handler(callback: CallbackQuery, state: FSMContext):
 
     if callback.data == 'check_payment':
         data = await state.get_data()
-        if await payment.check_payment(callback.from_user.id, data.get('qiwi_id')):
-            await state.update_data({'qiwi_id': None})
+        if await payment.check_payment(callback.from_user.id):
             callback.data = 'profile'
             await refill_handler(callback, state)
             

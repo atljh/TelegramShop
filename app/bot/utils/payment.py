@@ -198,12 +198,16 @@ async def qiwi_check(qiwi_id: int, user_id: int):
 
 
 
-async def check_payment(user_id: int, qiwi_id: int, amount: int = None) -> bool:
+async def check_payment(user_id: int, amount: int = None) -> bool:
     if amount:
         data = await user.pay_in_shop(user_id, amount, in_shop=True)
         return data
     else:
-        return await payment.check_last(user_id)
+        
+        result = await payment.check_last(user_id)
+        if result:
+            await payment.check(user_id)
+        return result
 
 
 async def get_refill_links(user_id: int, state: FSMContext, amount: int, pyramid=False):
