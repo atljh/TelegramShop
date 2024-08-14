@@ -43,7 +43,7 @@ async def check_cryptobot():
             print(inv)
             commission_amount = await payment.get_payment_gateway_commission('cryptobot')
             commission = inv.amount / 100 * commission_amount
-            amount = int(inv.amount - commission)
+            amount = round(inv.amount - commission)
             await payment.add(int(inv.payload))
             await user.refill(int(inv.payload), amount)
             try:
