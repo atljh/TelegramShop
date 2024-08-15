@@ -37,7 +37,7 @@ async def check_cryptobot():
     for invoice in invoices:
         try:
             inv = await crypto.get_invoices(invoice_ids=invoice.get('invoice_id'))
-        except Exception:
+        except Exception as e:
             print('Cryptobot exception', e)
         if inv.status == 'paid':
             print(inv)
