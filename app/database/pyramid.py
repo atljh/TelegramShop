@@ -611,8 +611,8 @@ async def update_system_fee(conn: Connection):
             WHERE time::date = CURRENT_DATE'''
     pyramid_today = await conn.fetchval(q)
 
-    q = '''UPDATE bot_pyramid_info SET pyramid_last_month = $1, pyramid_yesterday = $2, pyramid_today = $3'''
-    await conn.execute(q, pyramid_last_month, pyramid_yesterday, pyramid_today)
+    q = '''UPDATE bot_pyramid_info SET pyramid_last_month = $1, pyramid_yesterday = $2, pyramid_today = $3, total_plus = $4'''
+    await conn.execute(q, pyramid_last_month, pyramid_yesterday, pyramid_today, total_plus)
 
 
 @connection

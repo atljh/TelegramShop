@@ -27,7 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = f'{os.environ.get("SECRET_KEY")}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False')
+# DEBUG = os.environ.get('DEBUG', 'False')
+DEBUG = False
+
+
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', f'https://*.{os.environ.get("DOMAIN")}', 'http://xtether.top']
