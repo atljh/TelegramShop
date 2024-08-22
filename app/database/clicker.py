@@ -13,7 +13,8 @@ from threading import Thread
 async def get_reserve(conn: Connection) -> int:
     q = '''SELECT total_plus FROM bot_pyramid_info'''
     reserve = await conn.fetchval(q)
-    return int(reserve * 10000) # To xcoins
+    reserve = int(reserve * 10000) if reserve else 0 # To xcoins
+    return reserve
 
 @connection
 async def get_bot_user(telegram_id: int, conn: Connection) -> dict:
